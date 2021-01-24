@@ -1,4 +1,6 @@
-
+"""
+模型字典：前端用户选择的模型与生成代码666函数对应关系
+"""
 MODEL_DICT={
     '分类':{
         '朴素贝叶斯':'from sklearn.naive_bayes import GaussianNB',

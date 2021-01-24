@@ -1,3 +1,7 @@
+'''
+邮箱验证模块
+'''
+
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header

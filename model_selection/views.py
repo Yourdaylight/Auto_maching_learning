@@ -22,7 +22,14 @@ def show_dataset(request):
     '''
     根据用户选择的数据集，展示所有数据
     '''
+    print(request)
+    dataset_name=request.GET.get("dataset_name")
+    print(dataset_name)
     dp=dataset_process()
     df=dp.get_dataset('day')
     df_json=df.to_json()
     return HttpResponse(df_json)
+
+@require_http_methods(['GET'])
+def model_params(request):
+    pass
