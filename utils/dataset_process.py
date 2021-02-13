@@ -8,6 +8,7 @@
 import pymongo
 import pandas as pd
 from model_selection.models import UserModel
+import traceback
 import os
 class dataset_process():
     def __init__(self,url="localhost",port=27017,database="AML",collection="user_model",username="admin"):
@@ -16,7 +17,7 @@ class dataset_process():
         self.username=username
         self.user = self.collection.find_one({"username": self.username})
         self.columns=[]
-    def upload(self,file_path):
+    def upload(self,file_path,username):
         '''
 
         :param file_path: 用户上传的文件路径
@@ -24,14 +25,17 @@ class dataset_process():
         '''
         #文件后缀检查
         postfix=os.path.split(file_path)[-1].split(".")
-        if postfix[1]=='xls' or postfix[1]=='xlsx':
-            df=pd.read_excel(file_path)
-        else:
-            try:
-                df = pd.read_csv(file_path)
-            except Exception as e:
-                print("上传文件失败:",e.__traceback__)
-                return False
+        try:
+            if postfix[1]=='xls' or postfix[1]=='xlsx':
+                df=pd.read_excel(file_path)
+            elif postfix[1]=="csv" or postfix[1]=='txt':
+                df = pd.read_csv(file_path,encoding="utf-8")
+        except UnicodeDecodeError as e:
+            df = pd.read_csv(file_path, encoding="gbk")
+        except Exception as e:
+            print("上传文件失败")
+            traceback.print_exc()
+            return False
         #将dataframe转换为字典形式
         data = {i: df[i].tolist() for i in df.columns}
         #获取传入文件去掉后缀的名称

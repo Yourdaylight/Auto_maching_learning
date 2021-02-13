@@ -7,6 +7,7 @@ app_name = 'api'
 urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html')),
     path('index/', TemplateView.as_view(template_name='index.html')),
+    path('upload_dataset',upload_dataset),
     path('get_data_list',get_data_list),
     path('show_dataset',show_dataset),
     path('model_params',model_params)
