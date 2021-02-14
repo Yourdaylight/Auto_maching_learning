@@ -10,21 +10,29 @@ import pandas as pd
 from model_selection.models import UserModel
 import traceback
 import os
-class dataset_process():
+import time
+
+
+class DatasetProcess():
     def __init__(self,url="localhost",port=27017,database="AML",collection="user_model",username="admin"):
         self.client = pymongo.MongoClient(url, port)
         self.collection=self.client[database][collection]
         self.username=username
         self.user = self.collection.find_one({"username": self.username})
         self.columns=[]
+        self.datasets= [list(i.keys())[0] for i in self.user['dataset']]
+
+
+
     def upload(self,file_path,username):
         '''
-
         :param file_path: 用户上传的文件路径
-        :return:是否成功上传的bool值
+        :return :是否成功上传的bool值
         '''
         #文件后缀检查
         postfix=os.path.split(file_path)[-1].split(".")
+        if postfix[0] in self.datasets:
+            return False,"该数据集已存在"
         try:
             if postfix[1]=='xls' or postfix[1]=='xlsx':
                 df=pd.read_excel(file_path)
@@ -33,15 +41,19 @@ class dataset_process():
         except UnicodeDecodeError as e:
             df = pd.read_csv(file_path, encoding="gbk")
         except Exception as e:
-            print("上传文件失败")
             traceback.print_exc()
-            return False
+            return False,str(e)
         #将dataframe转换为字典形式
         data = {i: df[i].tolist() for i in df.columns}
         #获取传入文件去掉后缀的名称
         file_name=postfix[0]
-        self.collection.update_many({'username':self.username},{"$push":{"dataset":{file_name:data,"name":file_name}}})
-        return True
+        try:
+            self.collection.update_many({'username':self.username},{"$push":{"dataset":{file_name:data,"name":file_name}}})
+        except Exception as e:
+            traceback.print_exc()
+            return False, str(e)
+        return True,"上传成功"
+
     def get_dataset(self,dataset_name):
         '''
 
@@ -49,26 +61,37 @@ class dataset_process():
         :return: 获取数据集转换为DataFrame
         '''
         my_dataset =None
+        flag=False
         for name in self.user['dataset']:
             if name['name']==dataset_name:
                 my_dataset=name[dataset_name]
+                flag=True
                 break
-
-        self.columns=list(my_dataset.keys())
-        return pd.DataFrame(my_dataset)
+        if flag:
+            self.columns=list(my_dataset.keys())
+            return my_dataset
+        else:
+            return None
 
     def delete(self,dataset_name):
+        '''
+        根据数据集名称删除数据
+        :param dataset_name:
+        :return:
+        '''
 
         self.collection.update({"username":self.username},{"$pull":{"dataset":{"name":dataset_name}}})
+        return True
 
 #
-# if __name__=="__main__":
-#
-#     path="../Datasets/day.csv"
-#     dp=dataset_process()
-#     # dp.delete("hour")#删除admin用户下的hour文件
-#     dp.upload(path)#将day.csv上传
-#     a=dp.get_dataset("hour")
-#     print(pd.DataFrame(a))
+if __name__=="__main__":
+    path="../Datasets/day.csv"
+    dp=DatasetProcess()
+    res=dp.get_dataset('not')
+    print(res)
+    # dp.delete("hour")#删除admin用户下的hour文件
+    # dp.upload(path)#将day.csv上传
+    # a=dp.get_dataset("hour")
+    # print(pd.DataFrame(a))
 
 

@@ -10,5 +10,6 @@ urlpatterns = [
     path('upload_dataset',upload_dataset),
     path('get_data_list',get_data_list),
     path('show_dataset',show_dataset),
+    path('del_dataset',del_dataset),
     path('model_params',model_params)
 ]
