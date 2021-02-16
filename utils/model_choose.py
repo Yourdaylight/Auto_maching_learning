@@ -50,18 +50,24 @@ class SetModel():
     }
     '''
 
-    def __init__(self, dataset_name,target,features,model_type,model_name,evaluate_methods):
+    def __init__(self, dataset_name,features,target,model_type,model_name,evaluate_methods=[]):
         '''
-        参数与前端的用户输入一致
+
+        :param dataset_name(str,):数据集名称
+        :param features(str of list):特征列
+        :param target(str):目标
+        :param model_type(str):分类/回归/聚类
+        :param model_name(str of list):模型
+        :param evaluate_methods(str of list,非必填):模型评估方法
         '''
-        self.code_files='..\\codes'
+        self.code_files=os.path.join(os.path.abspath(''),'codes')
         self.dataset_name=dataset_name
         self.target=target
-        self.features=features.split(';')
+        self.features=features
         self.model_type=model_type
         self.model_name=model_name
-        self.generate=''
         self.evaluate_methods=evaluate_methods
+        self.generate=''
 
     def clean_data(self,df,cols,op,standard=''):
         '''
@@ -84,36 +90,40 @@ class SetModel():
             f = open(os.path.join(self.code_files,code_path), 'r',encoding=encoding)
             self.generate += f.read()+'\n'
         except:
-            f = open(os.path.join(self.code_files, code_path), 'r', encoding='gbk')
+            f = open(os.path.join(self.code_files,code_path), 'r', encoding='gbk')
             self.generate += f.read()+'\n'
 
     def get_code(self):
-        '''生成代码'''
+        #生成代码
         # 拼接导入的库
         self.joint_code('ImportPackages.py')
-        self.generate+='\n'+MODEL_DICT[self.model_type][self.model_name]+'\n'
+        for model in self.model_name:
+            self.generate+='\n'+MODEL_DICT[self.model_type][model]+'\n'
 
         # 拼接函数评估方法
-        for method in self.evaluate_methods:
-            self.joint_code(MODEL_DICT[method])
+        if len(self.evaluate_methods)!=0:
+            for method in self.evaluate_methods:
+                self.joint_code(MODEL_DICT[method])
 
         # 拼接变量
-        sklearn_model = MODEL_DICT[self.model_type][self.model_name].split(' ')[-1] + '()'
-        self.generate+='''
-FILE_PATH='{}'\n
+        for model in self.model_name:
+            sklearn_model = MODEL_DICT[self.model_type][model].split(' ')[-1] + '()'
+            self.generate+='''
+FILE_PATH='./{}'\n
 FEATURES={}\n
 TARGET='{}'\n
 MODEL={}\n
-        '''.format(self.dataset_name, self.features, self.target, sklearn_model)
+        '''.format(self.dataset_name.replace('-','.'), self.features, self.target, sklearn_model)
         #拼接主函数
         self.joint_code('Main.py')
 
         #生成代码文件
-        with open('generate.py','w',encoding='utf-8') as f:
+        with open(os.path.join(os.path.abspath(''),'temp/generate.py'),'w',encoding='utf-8') as f:
             f.write(self.generate)
         f.close()
+        return self.generate
 
 
 if __name__=='__main__':
-    myModel=SetModel('day','season','cnt;yr;weekday','分类','决策树',['混淆矩阵','ROC曲线'])
+    myModel=SetModel('day',['cnt','yr','weekday'],'season','分类',['决策树'],['混淆矩阵','ROC曲线'])
     myModel.get_code()

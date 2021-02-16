@@ -7,7 +7,7 @@
 
 import pymongo
 import pandas as pd
-from model_selection.models import UserModel
+from ModelSelection.models import UserModel
 import traceback
 import os
 import time
@@ -20,8 +20,12 @@ class DatasetProcess():
         self.username=username
         self.user = self.collection.find_one({"username": self.username})
         self.columns=[]
-        self.datasets= [list(i.keys())[0] for i in self.user['dataset']]
+        # self.datasets= [i.get('name') for i in self.user['dataset']]
 
+    def get_dataset_info(self):
+        names=[i.get('name') for i in self.user['dataset']]
+        upload_times=[i.get('upload_time') for i in self.user['dataset']]
+        return names,upload_times
 
 
     def upload(self,file_path,username):
@@ -46,9 +50,10 @@ class DatasetProcess():
         #将dataframe转换为字典形式
         data = {i: df[i].tolist() for i in df.columns}
         #获取传入文件去掉后缀的名称
-        file_name=postfix[0]
+        file_name=postfix[0]+'_'+postfix[1]
+        upload_time=time.time()
         try:
-            self.collection.update_many({'username':self.username},{"$push":{"dataset":{file_name:data,"name":file_name}}})
+            self.collection.update_many({'username':self.username},{"$push":{"dataset":{file_name:data,"name":file_name,'upload_time':upload_time}}})
         except Exception as e:
             traceback.print_exc()
             return False, str(e)
@@ -56,8 +61,8 @@ class DatasetProcess():
 
     def get_dataset(self,dataset_name):
         '''
-
-        :param dataset_name:
+        从数据库取出数据，转换为DF进行分析
+        :param dataset_name:数据集名称
         :return: 获取数据集转换为DataFrame
         '''
         my_dataset =None
@@ -88,7 +93,8 @@ if __name__=="__main__":
     path="../Datasets/day.csv"
     dp=DatasetProcess()
     res=dp.get_dataset('not')
-    print(res)
+    for i in dp.user['dataset']:
+        print(i['name'])
     # dp.delete("hour")#删除admin用户下的hour文件
     # dp.upload(path)#将day.csv上传
     # a=dp.get_dataset("hour")

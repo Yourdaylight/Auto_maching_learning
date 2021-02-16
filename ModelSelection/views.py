@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse,HttpResponse
 from django.views.decorators.http import require_http_methods
 from utils.dataset_process import  DatasetProcess
+from utils.model_choose import SetModel
 import os
 import traceback
 import json
@@ -53,14 +54,16 @@ def get_data_list(request):
     data={
             "msg":None,
             "code":None,
-            "data":None
+            "data":{}
         }
     username='admin'
     dp=DatasetProcess(username=username)
     try:
-        lists=[list(i.keys())[0] for i in dp.user['dataset']]
-        data['data']=lists
+        names,upload_times=dp.get_dataset_info()
+        data['data']['name']=names
+        data['data']['upload_time']=upload_times
     except Exception as e:
+        traceback.print_exc()
         data['msg']=str(e)
         data['code']=500
     return JsonResponse(data,status=data['code'], safe=False)
@@ -117,6 +120,32 @@ def del_dataset(request):
     return JsonResponse(data,status=data['code'])
 
 
-@require_http_methods(['GET'])
-def model_params(request):
-    pass
+@require_http_methods(['POST'])
+def generate_code(request):
+    data = {
+        "msg": None,
+        "code": None
+    }
+    try:
+        postBody=json.loads(request.body)
+        username=postBody.pop('username')
+        postBody=postBody.get('data')
+
+        dataset_name=postBody.get('dataset_name')
+        features=postBody.get('features')
+        target=postBody.get('target')
+        model_type=postBody.get('model_type')
+        model_name=postBody.get('models')
+        evaluate_methods=postBody.get("metrics")
+        myModel=SetModel(dataset_name,features,target,model_type,model_name,evaluate_methods)
+
+        codes=myModel.get_code()
+        if codes:
+            data['data']=codes
+            data['msg']="上传成功"
+            data['code']=200
+        return JsonResponse(data,status=data['code'])
+    except Exception as e:
+        traceback.print_exc()
+        return JsonResponse({'msg':str(e)})
+

@@ -1,5 +1,5 @@
 from django.urls import path
-from model_selection import views
+from ModelSelection import views
 from django.conf.urls import url
 from django.views.generic.base import TemplateView
 from .views import *
@@ -11,5 +11,5 @@ urlpatterns = [
     path('get_data_list',get_data_list),
     path('show_dataset',show_dataset),
     path('del_dataset',del_dataset),
-    path('model_params',model_params)
+    path('generate_code',generate_code)
 ]

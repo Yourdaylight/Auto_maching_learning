@@ -15,12 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from model_selection  import views
+from ModelSelection  import views
 from django.urls import path, include
-import model_selection.urls
+import ModelSelection.urls
 from django.conf.urls import url
 urlpatterns = [
-    path('',include(model_selection.urls)),
+    path('', include(ModelSelection.urls)),
     path('admin/', admin.site.urls),
-    path('api/', include(model_selection.urls, namespace='modelSelection')),
+    path('api/', include(ModelSelection.urls, namespace='modelSelection')),
 ]

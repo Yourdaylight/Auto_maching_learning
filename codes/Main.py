@@ -1,9 +1,5 @@
 
 
-# FILE_PATH={}#dataset_name
-# FEATURES={}
-# TARGET={}
-# MODEL={}
 if FILE_PATH.split('.')[-1]=='xls' or FILE_PATH.split('.')[-1]=='xlsx':
     DF=pd.read_excel(FILE_PATH)
 else:

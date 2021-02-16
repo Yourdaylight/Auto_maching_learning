@@ -6,11 +6,14 @@ MODEL_DICT = {
         '朴素贝叶斯': 'from sklearn.naive_bayes import GaussianNB',
         '决策树': 'from sklearn.tree import DecisionTreeClassifier',
         '支持向量机': 'from sklearn.svm import SVC',
-        '神经网络': 'from sklearn.neural_network import MLPClassifier'
+        '神经网络': 'from sklearn.neural_network import MLPClassifier',
+        '逻辑回归': 'from sklearn.linear_model import LogisticRegression',
+        'KNN':'from sklearn.neighbors import KNeighborsClassifier'
+
     },
     '回归': {
         '线性回归': 'from sklearn.linear_model import LinearRegression',
-        '逻辑回归': 'from sklearn.linear_model import LogisticRegression',
+        'KNN':'from sklearn.neighbors import KNeighborsRegressor',
         '决策树': 'from sklearn.tree import DecisionTreeRegressor',
         '支持向量机': 'from sklearn.svm import SVR',
         '神经网络': 'from sklearn.neural_network import MLPRegressor'
