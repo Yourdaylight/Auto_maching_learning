@@ -47,3 +47,9 @@
 │  Readme.md    
 
            
+### 三、mongodb出现问题
+1、开放远程端口
+`sudo /sbin/iptables -I INPUT -p tcp --dport 27017 -j ACCEPT`
+2、`systemctl restart mongod`失败
+- 原因:没有给sockw文件设置权限
+- 解决方法:`sudo chown mongod:mongod /tmp/mongodb-27017.sock`

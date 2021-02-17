@@ -13,6 +13,9 @@ def get_datesets_list(request):
     return render(request, "../templates/dist/index.html")
 
 @require_http_methods(['POST'])
+def regist(request):
+    pass
+@require_http_methods(['POST'])
 def upload_dataset(request):
     '''
     上传数据集到mongodb

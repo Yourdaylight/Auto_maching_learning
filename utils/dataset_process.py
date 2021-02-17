@@ -12,15 +12,18 @@ import traceback
 import os
 import time
 
-
+# username='root'
+# password='lzh.mongo.admin'
+# url='47.97.197.244'
+# port=27017
 class DatasetProcess():
-    def __init__(self,url="localhost",port=27017,database="AML",collection="user_model",username="admin"):
-        self.client = pymongo.MongoClient(url, port)
+    def __init__(self,database="AML",collection="user_model",username="admin"):
+        self.client =pymongo.MongoClient(host="localhost",port=27017)
         self.collection=self.client[database][collection]
         self.username=username
         self.user = self.collection.find_one({"username": self.username})
         self.columns=[]
-        # self.datasets= [i.get('name') for i in self.user['dataset']]
+        self.datasets= [i.get('name') for i in self.user['dataset']]
 
     def get_dataset_info(self):
         names=[i.get('name') for i in self.user['dataset']]
@@ -49,11 +52,10 @@ class DatasetProcess():
             return False,str(e)
         #将dataframe转换为字典形式
         data = {i: df[i].tolist() for i in df.columns}
-        #获取传入文件去掉后缀的名称
-        file_name=postfix[0]+'_'+postfix[1]
+        filename=postfix[0]+"_"+postfix[1]
         upload_time=time.time()
         try:
-            self.collection.update_many({'username':self.username},{"$push":{"dataset":{file_name:data,"name":file_name,'upload_time':upload_time}}})
+            self.collection.update_many({'username':self.username},{"$push":{"dataset":{filename:data,"name":filename,'upload_time':upload_time}}})
         except Exception as e:
             traceback.print_exc()
             return False, str(e)
@@ -90,11 +92,12 @@ class DatasetProcess():
 
 #
 if __name__=="__main__":
-    path="../Datasets/day.csv"
-    dp=DatasetProcess()
-    res=dp.get_dataset('not')
-    for i in dp.user['dataset']:
-        print(i['name'])
+    pass
+    # path="../Datasets/day.csv"
+    # dp=DatasetProcess()
+    # res=dp.get_dataset('not')
+    # for i in dp.user['dataset']:
+    #     print(i['name'])
     # dp.delete("hour")#删除admin用户下的hour文件
     # dp.upload(path)#将day.csv上传
     # a=dp.get_dataset("hour")

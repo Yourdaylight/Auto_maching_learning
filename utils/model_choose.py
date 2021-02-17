@@ -21,11 +21,11 @@ MODEL_DICT={
         '朴素贝叶斯':'from sklearn.naive_bayes import GaussianNB',
         '决策树':'from sklearn.tree import DecisionTreeClassifier',
         '支持向量机':'from sklearn.svm import SVC',
+        '逻辑回归': 'from sklearn.linear_model import LogisticRegression',
         '神经网络':'from sklearn.neural_network import MLPClassifier'
     },
     '回归':{
         '线性回归':'from sklearn.linear_model import LinearRegression',
-        '逻辑回归':'from sklearn.linear_model import LogisticRegression',
         '决策树':'from sklearn.tree import DecisionTreeRegressor',
         '支持向量机':'from sklearn.svm import SVR',
         '神经网络':'from sklearn.neural_network import MLPRegressor'
@@ -113,7 +113,7 @@ FILE_PATH='./{}'\n
 FEATURES={}\n
 TARGET='{}'\n
 MODEL={}\n
-        '''.format(self.dataset_name.replace('-','.'), self.features, self.target, sklearn_model)
+        '''.format(self.dataset_name.replace('_','.'), self.features, self.target, sklearn_model)
         #拼接主函数
         self.joint_code('Main.py')
 

@@ -20,14 +20,14 @@ class UserModel(mongoengine.Document):
 # print(os.path)
 # df = pd.read_csv("Datasets/hour.csv")
 # data = {i: df[i].tolist() for i in df.columns}
-# UserModel.objects.create(
-#     username='admin',
-#     password='admin',
-#     phone='123456',
-#     email='123456',
-#     authority=True,
-#     dataset=[{"hour": data,"name":"hour"}]
-# )
+UserModel.objects.create(
+    username='admin',
+    password='admin',
+    phone='123456',
+    email='123456',
+    authority=True,
+    dataset=[]
+)
 #
 #
 #
