@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse,HttpResponse
 from django.views.decorators.http import require_http_methods
-from utils.dataset_process import  DatasetProcess
+from utils.dataset_process import DatasetProcess
 from utils.model_choose import SetModel
 import os
 import traceback

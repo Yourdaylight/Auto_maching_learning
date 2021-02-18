@@ -7,7 +7,7 @@
 
 import pymongo
 import pandas as pd
-from ModelSelection.models import UserModel
+from ModelSelection.models import UserModel,DatasetModel
 import traceback
 import os
 import time
@@ -19,17 +19,19 @@ import time
 class DatasetProcess():
     def __init__(self,database="AML",collection="user_model",username="admin"):
         self.client =pymongo.MongoClient(host="localhost",port=27017)
-        self.collection=self.client[database][collection]
+        self.mydb=self.client[database]
+        self.user_collection=self.mydb[collection]
         self.username=username
-        self.user = self.collection.find_one({"username": self.username})
-        self.columns=[]
+        self.user = self.user_collection.find_one({"username": self.username})
+        self.isVip=self.user.get('isVip')
         self.datasets= [i.get('name') for i in self.user['dataset']]
-
+        self.columns = []
+        self.DM=DatasetModel.objects()
     def get_dataset_info(self):
         names=[i.get('name') for i in self.user['dataset']]
         upload_times=[i.get('upload_time') for i in self.user['dataset']]
         return names,upload_times
-
+    
 
     def upload(self,file_path,username):
         '''
@@ -38,7 +40,10 @@ class DatasetProcess():
         '''
         #文件后缀检查
         postfix=os.path.split(file_path)[-1].split(".")
-        if postfix[0] in self.datasets:
+        filename = postfix[0] + "_" + postfix[1]
+        if not self.isVip:
+            return False,"非会员最多存储五份数据集"
+        if filename in self.datasets:
             return False,"该数据集已存在"
         try:
             if postfix[1]=='xls' or postfix[1]=='xlsx':
@@ -51,11 +56,30 @@ class DatasetProcess():
             traceback.print_exc()
             return False,str(e)
         #将dataframe转换为字典形式
-        data = {i: df[i].tolist() for i in df.columns}
-        filename=postfix[0]+"_"+postfix[1]
+        cols=df.columns
+        data = {i: df[i].tolist() for i in cols }
         upload_time=time.time()
         try:
-            self.collection.update_many({'username':self.username},{"$push":{"dataset":{filename:data,"name":filename,'upload_time':upload_time}}})
+            try:
+                self.DM.create(
+                    username=self.username,
+                    dataset_name=filename,
+                    columns=cols,
+                    data=data
+                )
+            except:
+                self.DM.create(
+                    username=self.username,
+                    dataset_name=filename,
+                    columns=cols,
+                    data={}
+                )
+                self.DM.filter(
+                    username=self.username,
+                    dataset_name=filename).update(data=data)
+            self.user_collection.update_many({'username': self.username},
+                                             {"$push": {"dataset": {"name": filename, 'upload_time': upload_time}}})
+
         except Exception as e:
             traceback.print_exc()
             return False, str(e)
@@ -63,22 +87,15 @@ class DatasetProcess():
 
     def get_dataset(self,dataset_name):
         '''
-        从数据库取出数据，转换为DF进行分析
+        从数据库取出数据
         :param dataset_name:数据集名称
-        :return: 获取数据集转换为DataFrame
+        :return: 获取数据集转换为字典
         '''
-        my_dataset =None
-        flag=False
-        for name in self.user['dataset']:
-            if name['name']==dataset_name:
-                my_dataset=name[dataset_name]
-                flag=True
-                break
-        if flag:
-            self.columns=list(my_dataset.keys())
-            return my_dataset
-        else:
-            return None
+        model=self.mydb['dataset_model']
+        query=dict(dataset_name=dataset_name,username=self.username)
+        res=model.find_one(query)
+        return res['data']
+
 
     def delete(self,dataset_name):
         '''
@@ -87,7 +104,8 @@ class DatasetProcess():
         :return:
         '''
 
-        self.collection.update({"username":self.username},{"$pull":{"dataset":{"name":dataset_name}}})
+        self.user_collection.update({"username":self.username},{"$pull":{"dataset":{"name":dataset_name}}})
+        self.DM.filter(username=self.username,dataset_name=dataset_name).delete()
         return True
 
 #
@@ -95,6 +113,8 @@ if __name__=="__main__":
     pass
     # path="../Datasets/day.csv"
     # dp=DatasetProcess()
+    # a=dp.get_dataset('aapl_csv')
+    # print(a)
     # res=dp.get_dataset('not')
     # for i in dp.user['dataset']:
     #     print(i['name'])

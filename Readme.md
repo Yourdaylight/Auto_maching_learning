@@ -53,3 +53,6 @@
 2、`systemctl restart mongod`失败
 - 原因:没有给sockw文件设置权限
 - 解决方法:`sudo chown mongod:mongod /tmp/mongodb-27017.sock`
+
+### 四、问题代办
+- [ ] 选择数据集后，数据集各列的响应速度性能优化（考虑存储文件的时候新增cols列） 
