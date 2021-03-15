@@ -25,4 +25,4 @@ MODEL_DICT = {
     '混淆矩阵': 'plot_confusion_matrix.py'
 }
 if __name__ == '__main__':
-    pass
+    print(MODEL_DICT['分类']['KNN'])

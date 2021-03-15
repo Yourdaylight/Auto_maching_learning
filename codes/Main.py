@@ -16,11 +16,6 @@ model = MODEL.fit(X_train, y_train)
 #预测
 y_pred = model.predict(X_test)
 # 模型评估
-# 绘制混淆矩阵
-cnf_matrix = confusion_matrix(y_test, y_pred)
-np.set_printoptions(precision=len(y.unique()))  # 设置打印数量的阈值
-class_names = y.unique()
-test_report = classification_report(y_test, y_pred)
-print(test_report)
-plot_confusion_matrix(cnf_matrix, classes=class_names, title='Confusion matrix')
-plot_ROC_curve(y_test, y_pred)
+
+
+

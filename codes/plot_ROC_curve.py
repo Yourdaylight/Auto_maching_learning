@@ -8,3 +8,4 @@ def plot_ROC_curve(y_test, y_predict):
     plt.ylabel('TPR')
     plt.xlabel('FPR')
     plt.show()
+plot_ROC_curve(y_test, y_pred)

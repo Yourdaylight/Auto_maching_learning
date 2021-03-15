@@ -19,3 +19,12 @@ def plot_confusion_matrix(cm, classes, normalize=False,title='Confusion matrix',
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     plt.show()
+
+#分类评估报告
+test_report = classification_report(y_test, y_pred)
+print(test_report)
+# 绘制混淆矩阵
+cnf_matrix = confusion_matrix(y_test, y_pred)
+np.set_printoptions(precision=len(y.unique()))  # 设置打印数量的阈值
+class_names = y.unique()
+plot_confusion_matrix(cnf_matrix, classes=class_names, title='Confusion matrix')
