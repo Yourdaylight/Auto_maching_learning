@@ -1,11 +1,13 @@
 import json
 import os
 import traceback
+
 import pandas as pd
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 
+from codes.MODEL_DICT import CLEAN_DICT
 from utils.dataset_process import DatasetProcess
 from utils.model_choose import SetModel
 from utils.user_operate import UserProcess, Regist, sendCode
@@ -87,6 +89,9 @@ def regist(request):
 
 @require_http_methods(['POST'])
 def send_code(request):
+    '''
+    注册发送验证码
+    '''
     postBody = json.loads(request.body)
     email = postBody.get("email")
     flag = sendCode(email)
@@ -100,7 +105,6 @@ def upload_dataset(request):
     '''
 
     username = request.POST.get("username").replace('"', '')
-    print("upload username:" + username)
     dp = DatasetProcess(username=username)
     data = {
         "msg": None,
@@ -143,7 +147,6 @@ def get_data_list(request):
     username = request.GET.get('username').replace('"', '')
     dp = DatasetProcess(username=username)
     try:
-
         names, upload_times = dp.get_dataset_info()
         data['data']['name'] = names
         data['data']['upload_time'] = upload_times
@@ -176,6 +179,33 @@ def show_dataset(request):
             raise Exception("数据加载失败")
         data['data'] = data_dict
         data['data']['cols'] = list(data_dict.keys())
+        data['code'] = 200
+        data['msg'] = "Success"
+    except Exception as e:
+        data['code'] = 500
+        data['msg'] = str(e)
+        traceback.print_exc()
+    return JsonResponse(data, status=data['code'], json_dumps_params={'ensure_ascii': False})
+
+
+@require_http_methods(['GET'])
+def get_dataset_cols(request):
+    '''
+       根据用户选择的数据集，返回数据集的所有列
+       '''
+    data = {
+        "msg": None,
+        "code": None,
+        "data": None
+    }
+
+    username = request.GET.get('username').replace('"', '')
+    dp = DatasetProcess(username=username)
+    try:
+        dataset_name = request.GET.get("dataset_name")
+        dataset_cols = dp.get_dataset_cols(dataset_name)
+        # 将上述字典转Dataframe将缺失值填充为 "" 否则前端无法展示
+        data['data'] = dataset_cols
         data['code'] = 200
         data['msg'] = "Success"
     except Exception as e:
@@ -288,3 +318,14 @@ def export_code(request):
     except Exception as e:
         traceback.print_exc()
         return HttpResponse(str(e))
+
+
+@require_http_methods(['GET'])
+def get_clean_methods(request):
+    res = {}
+    for method, sub_method in CLEAN_DICT.items():
+        if isinstance(sub_method, dict):
+            res[method] = list(sub_method.keys())
+        else:
+            res[method] = sub_method
+    return JsonResponse({"data": res}, status=200)

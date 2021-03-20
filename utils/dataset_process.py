@@ -101,6 +101,18 @@ class DatasetProcess():
         res = model.find_one(query)
         return res['data']
 
+    def get_dataset_cols(self, dataset_name):
+        '''
+        从数据库取出数据集的列名
+        :param dataset_name:数据集名称
+        :return: 获取数据集转换为字典
+        '''
+        model = self.mydb['dataset_model']
+        query = dict(dataset_name=dataset_name, username=self.username)
+        res = model.find_one(query)
+        return res['columns']
+
+
     # todo 后续确保filename为相对路径
     def generate_report(self, dataset_name):
         filename = "E:/study/项目/AML_frontend/static/%s_%s.html" % (self.username, dataset_name)

@@ -75,12 +75,13 @@ class SetModel():
         try:
             f = open(os.path.join(self.code_files, code_path), 'r', encoding=encoding)
             self.generate += f.read() + '\n'
-        except:
+        except Exception as e:
             f = open(os.path.join(self.code_files, code_path), 'r', encoding='gbk')
             self.generate += f.read() + '\n'
 
+
     def get_code(self):
-        # 生成代码
+        ''' 生成代码'''
         # 拼接导入的库
         self.joint_code('ImportPackages.py')
         for model in self.model_name:
@@ -112,6 +113,9 @@ MODEL={}\n
             f.write(self.generate)
         # 返回生成代码的文本
         return self.generate
+
+    def run_code(self):
+        pass
 
 
 if __name__ == '__main__':
