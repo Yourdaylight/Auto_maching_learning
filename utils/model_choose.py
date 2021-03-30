@@ -1,8 +1,8 @@
 import os
 
-# from codes import MODEL_DICT
 
-'''
+
+"""
 流程：   
 ` 1、从monodb读取用户上传的数据集（已完成）`       
 `2、传入需要处理的列(特征列)，以及处理过程函数。  
@@ -16,12 +16,12 @@ import os
        仅包含功能函数
        
 - 主函数预先定义一个代码文件，相关参数通过占位符填充，填充的参数来源于前段输入，包括：主要包括特征列、目标列，文件名
-'''
-from codes.MODEL_DICT import MODEL_DICT
+"""
+from code_templates.MODEL_DICT import MODEL_DICT
 
 
 class SetModel():
-    '''
+    """
 
     用于与前端界面交互，获取特征列，以及数据处理步骤。
     根据用户选择的步骤，读取预定义的代码。
@@ -31,10 +31,10 @@ class SetModel():
         features:[],
 
     }
-    '''
+    """
 
     def __init__(self, name, dataset_name, features, target, model_type, model_name, username='', evaluate_methods=[]):
-        '''
+        """
 
         :param name(str,):任务名称
         :param dataset_name(str,):数据集名称
@@ -43,8 +43,8 @@ class SetModel():
         :param model_type(str):分类/回归/聚类
         :param model_name(str of list):模型
         :param evaluate_methods(str of list,非必填):模型评估方法
-        '''
-        self.code_files = os.path.join(os.path.abspath(''), 'codes')
+        """
+        self.code_files = os.path.join(os.path.abspath(''), 'code_templates')
         self.name = name
         self.dataset_name = dataset_name
         self.target = target
@@ -54,14 +54,15 @@ class SetModel():
         self.evaluate_methods = evaluate_methods
         self.username = username
         self.generate = ''
+        self.clean_code = ''
 
     def clean_data(self, df, cols, op, standard=''):
-        '''
+        """
            自动数据清洗
            df:
            cols:
            op:数据清洗的操作
-           '''
+           """
         if op == 'fillna':
             df.loc[:, cols].fillna()
         elif op == 'dropna':
@@ -71,7 +72,7 @@ class SetModel():
         return df
 
     def joint_code(self, code_path, encoding='utf-8'):
-        '''拼接代码文件'''
+        """拼接代码文件"""
         try:
             f = open(os.path.join(self.code_files, code_path), 'r', encoding=encoding)
             self.generate += f.read() + '\n'
@@ -79,23 +80,29 @@ class SetModel():
             f = open(os.path.join(self.code_files, code_path), 'r', encoding='gbk')
             self.generate += f.read() + '\n'
 
+    def get_clean_code(self):
+        pass
 
     def get_code(self):
-        ''' 生成代码'''
+        """ 生成代码"""
         # 拼接导入的库
         self.joint_code('ImportPackages.py')
+        # 拼接模型需要的库
         for model in self.model_name:
             self.generate += '\n' + MODEL_DICT[self.model_type][model] + '\n'
-
+        # 拼接清洗代码
+        if self.clean_code:
+            # todo 数据清洗代码结果拼接于此
+            pass
         # 拼接变量
         for model in self.model_name:
-            sklearn_model = MODEL_DICT[self.model_type][model].split(' ')[-1] + '()'
-            self.generate += '''
+            sklearn_model = MODEL_DICT[self.model_type].get(model, " ").split(' ')[-1] + '()'
+            self.generate += """
 FILE_PATH='./{}'\n
 FEATURES={}\n
 TARGET='{}'\n
 MODEL={}\n
-        '''.format(self.dataset_name.replace('_', '.'), self.features, self.target, sklearn_model)
+        """.format(self.dataset_name.replace('_', '.'), self.features, self.target, sklearn_model)
         # 拼接主函数
         self.joint_code('Main.py')
         # 拼接函数评估方法

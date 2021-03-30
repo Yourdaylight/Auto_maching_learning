@@ -34,15 +34,18 @@ CLEAN_DICT = {
         "使用下一个数据填充": "df[cols]=df[cols].fillna(method='bfill')",
         "插值法填充": "df[cols].interpolate()"
     },
-    "排序": "",
+    "重复项删除":"",
+    "排序": "df.sort_values(by=cols, inplace= True)",
     "筛选": {
         "大于": "",
         "等于": "",
         "小于": "",
         "包含": ""
     },
-    "最大最小规范化":"",
-    "归一化":""
+    "归一化":{
+        "最大最小规范化":"",
+        "均值规范化":""
+    }
 }
 if __name__ == '__main__':
     print(MODEL_DICT['分类']['KNN'])

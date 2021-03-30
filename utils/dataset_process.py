@@ -112,7 +112,6 @@ class DatasetProcess():
         res = model.find_one(query)
         return res['columns']
 
-
     # todo 后续确保filename为相对路径
     def generate_report(self, dataset_name):
         filename = "E:/study/项目/AML_frontend/static/%s_%s.html" % (self.username, dataset_name)
@@ -124,6 +123,11 @@ class DatasetProcess():
             report = pandas_profiling.ProfileReport(df)
             report.to_file(filename)
         return os.path.split(filename)[-1]
+
+    # todo 数据清洗规则校验
+    def check_clean_condition(self,conditions):
+
+        pass
 
     def delete(self, dataset_name):
         '''
@@ -140,8 +144,8 @@ class DatasetProcess():
 #
 if __name__ == "__main__":
     # path="../Datasets/day.csv"
-    dp = DatasetProcess(username="lzh3")
-    dp.generate_report("day_csv")
+    # dp = DatasetProcess(username="lzh3")
+    # dp.generate_report("day_csv")
     # a=dp.get_dataset('aapl_csv')
     # print(a)
     # res=dp.get_dataset('not')
@@ -151,3 +155,4 @@ if __name__ == "__main__":
     # dp.upload(path)#将day.csv上传
     # a=dp.get_dataset("hour")
     # print(pd.DataFrame(a))
+    pass
