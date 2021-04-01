@@ -5,7 +5,7 @@
       <paths name="root@47.97.197.244:22">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/config_server" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

@@ -20,7 +20,7 @@ from ModelSelection.models import DatasetModel
 # password='lzh.mongo.admin'
 # url='47.97.197.244'
 # port=27017
-class DatasetProcess():
+class DatasetProcess:
     def __init__(self, database="AML", collection="user_model", username="admin"):
         self.client = pymongo.MongoClient(host="localhost", port=27017)
         self.mydb = self.client[database]
@@ -114,7 +114,7 @@ class DatasetProcess():
 
     # todo 后续确保filename为相对路径
     def generate_report(self, dataset_name):
-        filename = "E:/study/项目/AML_frontend/static/%s_%s.html" % (self.username, dataset_name)
+        filename = "E:/study/项目/AML-frontend-master/static/%s_%s.html" % (self.username, dataset_name)
         if not os.path.exists(filename):
             model = self.mydb['dataset_model']
             query = dict(dataset_name=dataset_name, username=self.username)
@@ -123,11 +123,6 @@ class DatasetProcess():
             report = pandas_profiling.ProfileReport(df)
             report.to_file(filename)
         return os.path.split(filename)[-1]
-
-    # todo 数据清洗规则校验
-    def check_clean_condition(self,conditions):
-
-        pass
 
     def delete(self, dataset_name):
         '''
@@ -141,18 +136,6 @@ class DatasetProcess():
         return True
 
 
-#
 if __name__ == "__main__":
-    # path="../Datasets/day.csv"
-    # dp = DatasetProcess(username="lzh3")
-    # dp.generate_report("day_csv")
-    # a=dp.get_dataset('aapl_csv')
-    # print(a)
-    # res=dp.get_dataset('not')
-    # for i in dp.user['dataset']:
-    #     print(i['name'])
-    # dp.delete("hour")#删除admin用户下的hour文件
-    # dp.upload(path)#将day.csv上传
-    # a=dp.get_dataset("hour")
-    # print(pd.DataFrame(a))
+
     pass

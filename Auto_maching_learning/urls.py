@@ -17,10 +17,15 @@ from django.contrib import admin
 from django.urls import path
 from ModelSelection import views
 from django.urls import path, include
-import ModelSelection.urls
+import ModelSelection.urls, UserAuthority.urls
+import Engines.engine_urls
 from django.conf.urls import url
+
 urlpatterns = [
     path('', include(ModelSelection.urls)),
     path('admin/', admin.site.urls),
-    path('api/', include(ModelSelection.urls, namespace='modelSelection')),
+    path('model_selection/', include(ModelSelection.urls, namespace='model_selection')),
+    path('user_authority/', include(UserAuthority.urls, namespace='user_authority')),
+    path('engine/', include(Engines.engine_urls, namespace="engine"))
+
 ]
