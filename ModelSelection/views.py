@@ -7,7 +7,7 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 
-from code_templates.MODEL_DICT import CLEAN_DICT
+from utils.MODEL_DICT import CLEAN_DICT
 from ModelSelection.dataset_process_model import DatasetProcess
 from ModelSelection.model_process_model import SetModel
 

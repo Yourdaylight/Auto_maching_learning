@@ -17,7 +17,7 @@ import os
        
 - 主函数预先定义一个代码文件，相关参数通过占位符填充，填充的参数来源于前段输入，包括：主要包括特征列、目标列，文件名
 """
-from code_templates.MODEL_DICT import MODEL_DICT
+from utils.MODEL_DICT import MODEL_DICT
 
 
 class SetModel():

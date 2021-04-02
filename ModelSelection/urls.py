@@ -5,8 +5,6 @@ from .views import *
 
 app_name = 'model_selection'
 urlpatterns = [
-    path('', TemplateView.as_view(template_name='index.html')),
-    path('index/', TemplateView.as_view(template_name='index.html')),
     path('upload_dataset', upload_dataset),  # 上传数据集文件
     path('get_data_list', get_data_list),  # 获取数据集列表
     path('show_dataset', show_dataset),  # 预览数据集

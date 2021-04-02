@@ -34,7 +34,7 @@ CLEAN_DICT = {
         "使用下一个数据填充": "df[cols]=df[cols].fillna(method='bfill')",
         "插值法填充": "df[cols].interpolate()"
     },
-    "重复项删除":"",
+    "重复项删除":"df[cols].dropna()",
     "排序": "df.sort_values(by=cols, inplace= True)",
     "筛选": {
         "大于": "",
