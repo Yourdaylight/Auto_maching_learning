@@ -21,12 +21,12 @@ class MongoUtil:
         :return:
         """
         upload_time = time.time()
-        columns = new_data.columns
+        columns = list(new_data.columns)
         data = new_data.to_dict(orient="list")
         # 插入到数据集集合
         self.mydb["dataset_model"].insert_one({
             "username":user_name,
-            "datset_name":dataset_name,
+            "dataset_name":dataset_name,
             "columns":columns,
             "data":data
         })

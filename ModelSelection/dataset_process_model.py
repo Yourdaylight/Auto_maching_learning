@@ -96,10 +96,15 @@ class DatasetProcess:
         :param dataset_name:数据集名称
         :return: 获取数据集转换为字典
         '''
-        model = self.mydb['dataset_model']
-        query = dict(dataset_name=dataset_name, username=self.username)
-        res = model.find_one(query)
-        return res['data']
+        try:
+            model = self.mydb['dataset_model']
+            query = dict(dataset_name=dataset_name, username=self.username)
+            print(query)
+            res = model.find_one(query)
+            return res['data']
+        except Exception as e:
+            traceback.print_exc()
+            raise e
 
     def get_dataset_cols(self, dataset_name):
         '''
