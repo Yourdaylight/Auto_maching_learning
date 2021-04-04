@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .user_authority_view import *
+from .user_authority_views import *
 
 app_name = 'user_authority'
 urlpatterns = [

@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from ModelSelection import views
+from ModelSelection import model_selection_views
 from django.urls import path, include
 import ModelSelection.urls, UserAuthority.urls
 import Engines.engine_urls

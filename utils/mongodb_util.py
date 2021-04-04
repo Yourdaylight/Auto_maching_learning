@@ -1,4 +1,5 @@
 import time
+
 from pymongo import MongoClient
 
 
@@ -25,18 +26,21 @@ class MongoUtil:
         data = new_data.to_dict(orient="list")
         # 插入到数据集集合
         self.mydb["dataset_model"].insert_one({
-            "username":user_name,
-            "dataset_name":dataset_name,
-            "columns":columns,
-            "data":data
+            "username": user_name,
+            "dataset_name": dataset_name,
+            "columns": columns,
+            "data": data
         })
         # 更新用户集合
-        self.mydb["user_model"].update_many({"username":user_name},
+        self.mydb["user_model"].update_many({"username": user_name},
                                             {"$push": {"dataset": {"name": dataset_name, 'upload_time': upload_time}}})
 
 
-
 if __name__ == '__main__':
-    # a = MongoUtil()
-    # print(a.find_dataset("lzh3","day_csv"))
+    import pandas as pd
+
+    a = MongoUtil()
+    data = a.find_dataset("lzh3", "day_csv")
+    df = pd.DataFrame(data)
+    df.to_csv("../temp/clean.day.csv", index=None)
     pass

@@ -75,10 +75,10 @@ class SetModel():
         """拼接代码文件"""
         try:
             f = open(os.path.join(self.code_files, code_path), 'r', encoding=encoding)
-            self.generate += f.read() + '\n'
+            self.generate += f.read()
         except Exception as e:
             f = open(os.path.join(self.code_files, code_path), 'r', encoding='gbk')
-            self.generate += f.read() + '\n'
+            self.generate += f.read()
 
     def get_clean_code(self):
         pass
@@ -89,23 +89,28 @@ class SetModel():
         self.joint_code('ImportPackages.py')
         # 拼接模型需要的库
         for model in self.model_name:
-            self.generate += '\n' + MODEL_DICT[self.model_type][model] + '\n'
-        # 拼接清洗代码
-        if self.clean_code:
-            # todo 数据清洗代码结果拼接于此
-            pass
+            self.generate += MODEL_DICT[self.model_type][model]+"\n"
+
         # 拼接变量
-        for model in self.model_name:
-            sklearn_model = MODEL_DICT[self.model_type].get(model, " ").split(' ')[-1] + '()'
-            self.generate += """
-FILE_PATH='./{}'\n
-FEATURES={}\n
-TARGET='{}'\n
-MODEL={}\n
-        """.format(self.dataset_name.replace('_', '.'), self.features, self.target, sklearn_model)
+        self.generate += """
+FILE_PATH='./{}'
+FEATURES={}
+TARGET='{}'
+        """.format(self.dataset_name.replace('_', '.'), self.features, self.target)
+        # 拼接调用的模型
+        sklearn_models = [MODEL_DICT[self.model_type].get(model, " ").split(' ')[-1] + '()' for model in self.model_name]
+        self.generate += """
+MODEL = [{}]
+        """.format(", ".join(sklearn_models))
         # 拼接主函数
         self.joint_code('Main.py')
-        # 拼接函数评估方法
+        # 拼接分类/回归的必要评估方法
+        if self.model_type == "分类":
+            self.joint_code("classifier_evaluation.py")
+        elif self.model_type == "回归":
+            self.joint_code("regressor_evaluation.py")
+
+        # 拼接用户自选的可视化的评估方法
         if len(self.evaluate_methods) != 0:
             for method in self.evaluate_methods:
                 location = MODEL_DICT.get(method)

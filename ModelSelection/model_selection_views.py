@@ -7,9 +7,9 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 
-from utils.MODEL_DICT import CLEAN_DICT
 from ModelSelection.dataset_process_model import DatasetProcess
 from ModelSelection.model_process_model import SetModel
+from utils.MODEL_DICT import CLEAN_DICT, MODEL_DICT, METRICS_DICT
 
 
 # Create your views here.
@@ -94,7 +94,9 @@ def show_dataset(request):
         dataset_name = request.GET.get("dataset_name")
         data_dict = dp.get_dataset(dataset_name)
         # 将上述字典转Dataframe将缺失值填充为 "" 否则前端无法展示
-        data_dict = pd.DataFrame(data_dict).fillna("").to_dict(orient='list')
+        data_dict = pd.DataFrame(data_dict).fillna("")
+        # 由于ui框架的原因，0无法加载，需要转换成字符串
+        data_dict = data_dict.replace(0, "0").to_dict(orient='list')
         if data_dict is None:
             raise Exception("数据加载失败")
         data['data'] = data_dict
@@ -241,9 +243,20 @@ def export_code(request):
 
 
 @require_http_methods(['GET'])
-def get_clean_methods(request):
+def get_methods(request):
+    """
+    获取预定义的数据清洗/数据建模/模型评估方法
+    :param request:
+    :return:
+    """
     res = {}
-    for method, sub_method in CLEAN_DICT.items():
+    types = {
+        "ml": MODEL_DICT,
+        "clean": CLEAN_DICT,
+        "metrics": METRICS_DICT
+    }
+    code_dict = types.get(request.GET.get("type"),{})
+    for method, sub_method in code_dict.items():
         if isinstance(sub_method, dict):
             res[method] = list(sub_method.keys())
         else:

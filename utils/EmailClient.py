@@ -2,13 +2,13 @@
 邮箱验证模块
 '''
 
-import smtplib
-import pymongo
-from email.mime.text import MIMEText
-from email.header import Header
 import random
+import smtplib
 import time
-from temp import EmailTemp
+from email.header import Header
+from email.mime.text import MIMEText
+
+import pymongo
 
 # 用于构建邮件头
 
@@ -16,13 +16,16 @@ from temp import EmailTemp
 password = ''
 # 收信方邮箱
 to_addr = '526494747@qq.com'
+
+
 class EmailService():
     def __init__(self):
         self.client = pymongo.MongoClient(host="localhost", port=27017)
         self.mydb = self.client["AML"]
         self.temp_collection = self.mydb["temp"]
-        self.valid_time=60*5
-    def send_email(self, to_addr,password='htvviggqfrwobbfc'):
+        self.valid_time = 60 * 5
+
+    def send_email(self, to_addr, password='htvviggqfrwobbfc'):
         '''
         :param password: Email authorization code
         :param to_addr: recevier email address
@@ -34,8 +37,8 @@ class EmailService():
         from_addr = 'yikechengxushu@qq.com'
         smtp_server = 'smtp.qq.com'
         # 邮箱正文内容，第一个参数为内容，第二个参数为格式(plain 为纯文本)，第三个参数为编码
-        validate_num=random.randint(100000,999999)
-        msg = MIMEText("你的验证码(注意，验证码仅{}分钟内有效)：{}".format(int(self.valid_time/60),validate_num), 'plain', 'utf-8')
+        validate_num = random.randint(100000, 999999)
+        msg = MIMEText("你的验证码(注意，验证码仅{}分钟内有效)：{}".format(int(self.valid_time / 60), validate_num), 'plain', 'utf-8')
         # 邮件头信息
         msg['From'] = Header(from_addr)
         msg['To'] = Header(to_addr)
@@ -50,37 +53,38 @@ class EmailService():
         server.sendmail(from_addr, to_addr, msg.as_string())
         # 关闭服务器
         server.quit()
-        send_info={
-            'address':to_addr,
+        send_info = {
+            'address': to_addr,
             'check_code': validate_num,
             'send_time': time.time()
         }
-        self.temp_collection.delete_many({"address":to_addr})
+        self.temp_collection.delete_many({"address": to_addr})
         self.temp_collection.insert_one(send_info)
         return send_info
 
-    def check_input(self,text,address):
+    def check_input(self, text, address):
         '''
         输入验证码校验
         :param text:
         :param address:
         :return:
         '''
-        query={"address":address}
-        print("用户输入信息:",text,type(text))
+        query = {"address": address}
+        print("用户输入信息:", text, type(text))
 
-        regist_info=self.temp_collection.find_one(query)
+        regist_info = self.temp_collection.find_one(query)
         print(regist_info)
         if regist_info:
-            send_time=regist_info.get('send_time')
-            if time.time()-send_time>self.valid_time:
+            send_time = regist_info.get('send_time')
+            if time.time() - send_time > self.valid_time:
                 self.temp_collection.delete_one(query)
                 return False
-            if text==str(regist_info.get("check_code")):
+            if text == str(regist_info.get("check_code")):
                 self.temp_collection.delete_one(query)
-                print(address+'注册成功')
+                print(address + '注册成功')
                 return True
         return False
+
 
 if __name__ == '__main__':
     pass
@@ -92,4 +96,3 @@ if __name__ == '__main__':
     # end=time.time()
     # print("发送校验耗时:",start-end)
     # print(a)
-
