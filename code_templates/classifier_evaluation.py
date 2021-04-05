@@ -18,7 +18,7 @@ def model_performance_evaluation(model_name, test, pred, spend_time):
 
 
 # 使用模型预测并评估
-evaluation_dimensions = ["模型名称", "AUC", "漏报率", "误报率", "训练时长(秒)"]
+evaluation_dimensions = ["模型名称", "准确率", "AUC", "漏报率", "误报率", "训练时长(秒)"]
 compare_result = {dimension: [] for dimension in evaluation_dimensions}
 for spend_time, fit_model in fit_models.items():
     y_pred = fit_model.predict(X_test)

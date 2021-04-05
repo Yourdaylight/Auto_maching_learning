@@ -22,9 +22,6 @@ MODEL_DICT = {
         'Adaboost': 'from sklearn.ensemble import AdaBoostRegressor',
         '随机森林':'from sklearn.ensemble import RandomForestRegressor'
     },
-    '聚类': {
-        'K-means': 'from sklearn.cluster import KMeans'
-    },
     'ROC曲线': 'plot_ROC_curve.py',
     '混淆矩阵': 'plot_confusion_matrix.py'
 }
