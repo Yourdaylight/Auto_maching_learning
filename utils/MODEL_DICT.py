@@ -61,8 +61,8 @@ CLEAN_DICT = {
         "包含": ""
     },
     "标准化": {
-        "最大最小规范化": "",
-        "均值规范化": ""
+        "最大最小规范化": "from sklearn.preprocessing import MinMaxScaler;df[cols]=MinMaxScaler().fit_transform(df[cols])",
+        "均值规范化": "from sklearn.preprocessing import StandardScaler;df[cols]=StandardScaler().fit_transform(df[cols])"
     }
 }
 if __name__ == '__main__':
