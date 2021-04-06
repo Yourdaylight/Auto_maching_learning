@@ -20,7 +20,12 @@ MODEL_DICT = {
         '支持向量机': 'from sklearn.svm import SVR',
         '神经网络': 'from sklearn.neural_network import MLPRegressor',
         'Adaboost': 'from sklearn.ensemble import AdaBoostRegressor',
-        '随机森林':'from sklearn.ensemble import RandomForestRegressor'
+        '随机森林': 'from sklearn.ensemble import RandomForestRegressor'
+    },
+    '聚类': {
+        'K_means': 'from sklearn.cluster import KMeans',
+        'MiniBatchKMeans': 'from sklearn.cluster import MiniBatchKMeans',
+        'BIRCH': 'from sklearn.cluster import Birch'
     },
     'ROC曲线': 'plot_ROC_curve.py',
     '混淆矩阵': 'plot_confusion_matrix.py'
@@ -35,7 +40,7 @@ METRICS_DICT = {
         "误差平方和": "",
         "决定系数(R²)": ""
     },
-    "聚类":{}
+    "聚类": {}
 }
 
 CLEAN_DICT = {

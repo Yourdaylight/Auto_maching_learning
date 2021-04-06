@@ -103,7 +103,7 @@ class DatasetProcess:
             res = model.find_one(query)
             return res['data']
         except Exception as e:
-            traceback.print_exc()
+            print(str(e))
             raise e
 
     def get_dataset_cols(self, dataset_name):

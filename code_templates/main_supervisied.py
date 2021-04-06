@@ -1,4 +1,3 @@
-
 # 读取数据
 if FILE_PATH.split('.')[-1]=='xls' or FILE_PATH.split('.')[-1]=='xlsx':
     DF=pd.read_excel(FILE_PATH)

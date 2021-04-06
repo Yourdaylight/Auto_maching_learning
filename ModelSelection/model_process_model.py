@@ -1,7 +1,5 @@
 import os
 
-
-
 """
 流程：   
 ` 1、从monodb读取用户上传的数据集（已完成）`       
@@ -89,7 +87,7 @@ class SetModel():
         self.joint_code('ImportPackages.py')
         # 拼接模型需要的库
         for model in self.model_name:
-            self.generate += MODEL_DICT[self.model_type][model]+"\n"
+            self.generate += MODEL_DICT[self.model_type][model] + "\n"
 
         # 拼接变量
         self.generate += """
@@ -102,13 +100,17 @@ TARGET='{}'
         self.generate += """
 MODEL = [{}]
         """.format(", ".join(sklearn_models))
-        # 拼接主函数
-        self.joint_code('Main.py')
-        # 拼接分类/回归的必要评估方法
+
+        # 拼接分类/回归/聚类的主函数与必要评估方法
         if self.model_type == "分类":
-            self.joint_code("classifier_evaluation.py")
+            self.joint_code('main_supervisied.py')
+            self.joint_code("evaluation_classifier.py")
         elif self.model_type == "回归":
-            self.joint_code("regressor_evaluation.py")
+            self.joint_code('main_supervisied.py')
+            self.joint_code("evaluation_regressor.py")
+        elif self.model_type == "聚类":
+            self.joint_code("main_unsupervised.py")
+            self.joint_code("evaluation_cluster.py")
 
         # 拼接用户自选的可视化的评估方法
         if len(self.evaluate_methods) != 0:

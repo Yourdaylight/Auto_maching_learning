@@ -262,3 +262,8 @@ def get_methods(request):
         else:
             res[method] = sub_method
     return JsonResponse({"data": res}, status=200)
+
+
+@require_http_methods(['POST'])
+def plot_graph(request):
+    pass
