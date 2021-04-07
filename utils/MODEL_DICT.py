@@ -55,15 +55,17 @@ CLEAN_DICT = {
     "重复项删除": "df[cols] = df[cols].dropna()",
     "排序": "df.sort_values(by=cols, inplace= True)",
     "筛选": {
-        "大于": "",
-        "等于": "",
-        "小于": "",
-        "包含": ""
+        "大于": "df[cols]",
+        "等于": "df[cols]",
+        "小于": "df[cols]",
+        "包含": "df[cols].str().contains()"
     },
     "标准化": {
         "最大最小规范化": "from sklearn.preprocessing import MinMaxScaler;df[cols]=MinMaxScaler().fit_transform(df[cols])",
         "均值规范化": "from sklearn.preprocessing import StandardScaler;df[cols]=StandardScaler().fit_transform(df[cols])"
-    }
+    },
+    "独热编码": "one_hot=pd.get_dummies(df[cols]);df[one_hot.columns] = one_hot",
+    "标签编码": "from sklearn.preprocessing import LabelEncoder;df['label_'+col for col in cols]=LabelEncoder().fit_transform(df[cols])"
 }
 if __name__ == '__main__':
     print(MODEL_DICT['分类']['KNN'])
