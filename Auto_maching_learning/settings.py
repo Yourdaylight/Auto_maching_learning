@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
@@ -26,6 +25,10 @@ SECRET_KEY = 'yvolr8nvtga=6p!=0g+#8vbpq98xf-0do=cbt#crl$6b^)$qm4'
 DEBUG = True
 ALLOWED_HOSTS = []
 
+
+LOG_DIR = os.path.join(BASE_DIR, "logs") 
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
 
 # Application definition
 
@@ -74,29 +77,33 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Auto_maching_learning.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',   # 数据库引擎
-        'NAME': 'AML',                  # 你要存储数据的库名，事先要创建之
-        'USER': 'root',                         # 数据库用户名
-        'PASSWORD': '123456',                     # 密码
-        'HOST': 'localhost',                    # 主机
-        'PORT': '3306',                         # 数据库使用的端口
+        'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
+        'NAME': 'AML',  # 你要存储数据的库名，事先要创建之
+        'USER': 'root',  # 数据库用户名
+        'PASSWORD': '123456',  # 密码
+        'HOST': 'localhost',  # 主机
+        'PORT': '3306',  # 数据库使用的端口
     },
     'mongotest': {
         'ENGINE': None,
     }
 }
+import platform
+if platform.system().lower() == 'windows':
+    DATABASES["default"]["PASSWORD"] = "123456"
+
+
 
 import mongoengine
+
 # 连接mongodb中数据库
 conn = mongoengine.connect("AML")
 print(conn)
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -116,7 +123,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -130,7 +136,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
@@ -138,7 +143,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'templates/dist/static')
 ]
-
 
 # 跨域增加忽略
 CORS_ALLOW_CREDENTIALS = True

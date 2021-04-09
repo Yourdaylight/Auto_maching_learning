@@ -86,7 +86,6 @@ class DatasetProcess:
                                              {"$push": {"dataset": {"name": filename, 'upload_time': upload_time}}})
 
         except Exception as e:
-            traceback.print_exc()
             return False, str(e)
         return True, "上传成功"
 
@@ -112,22 +111,31 @@ class DatasetProcess:
         :param dataset_name:数据集名称
         :return: 获取数据集转换为字典
         '''
-        model = self.mydb['dataset_model']
-        query = dict(dataset_name=dataset_name, username=self.username)
-        res = model.find_one(query)
-        return res['columns']
-
-    # todo 后续确保filename为相对路径
-    def generate_report(self, dataset_name):
-        filename = "E:/study/项目/AML-frontend-master/static/%s_%s.html" % (self.username, dataset_name)
-        if not os.path.exists(filename):
+        try:
             model = self.mydb['dataset_model']
             query = dict(dataset_name=dataset_name, username=self.username)
             res = model.find_one(query)
-            df = pd.DataFrame(res["data"])
-            report = pandas_profiling.ProfileReport(df)
-            report.to_file(filename)
-        return os.path.split(filename)[-1]
+            return res['columns']
+        except Exception as e:
+            raise e
+
+    # todo 后续确保filename为相对路径
+    def generate_report(self, dataset_name):
+        try:
+            current_path = os.getcwd()
+            parent_path, current_file_name = os.path.split(current_path)
+            filename = os.path.join(parent_path, "AML_frontend/static/%s_%s.html" % (self.username, dataset_name))
+
+            if not os.path.exists(filename):
+                model = self.mydb['dataset_model']
+                query = dict(dataset_name=dataset_name, username=self.username)
+                res = model.find_one(query)
+                df = pd.DataFrame(res["data"])
+                report = pandas_profiling.ProfileReport(df)
+                report.to_file(filename)
+            return os.path.split(filename)[-1]
+        except Exception as e:
+            raise e
 
     def delete(self, dataset_name):
         '''
@@ -142,5 +150,4 @@ class DatasetProcess:
 
 
 if __name__ == "__main__":
-
     pass

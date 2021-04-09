@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 import traceback
 
 import pandas as pd
@@ -10,8 +11,10 @@ from django.views.decorators.http import require_http_methods
 from ModelSelection.dataset_process_model import DatasetProcess
 from ModelSelection.model_process_model import SetModel
 from utils.MODEL_DICT import CLEAN_DICT, MODEL_DICT, METRICS_DICT
+from utils.logutil import set_log
+from Auto_maching_learning.settings import LOG_DIR
 
-
+logger = set_log(os.path.join(LOG_DIR, sys.argv[0].split(".")[0]))
 # Create your views here.
 
 def get_datesets_list(request):
@@ -50,7 +53,7 @@ def upload_dataset(request):
                 raise Exception("上传失败")
     except Exception as e:
         data['code'] = 500
-        traceback.print_exc()
+        logger.exception(e)
     return JsonResponse(data, safe=False, status=data['code'])
 
 
@@ -71,9 +74,9 @@ def get_data_list(request):
         data['data']['name'] = names
         data['data']['upload_time'] = upload_times
     except Exception as e:
-        traceback.print_exc()
         data['msg'] = str(e)
         data['code'] = 500
+        logger.exception(e)
     return JsonResponse(data, status=data['code'], safe=False)
 
 
@@ -106,7 +109,7 @@ def show_dataset(request):
     except Exception as e:
         data['code'] = 500
         data['msg'] = str(e)
-        traceback.print_exc()
+        logger.exception(e)
     return JsonResponse(data, status=data['code'], json_dumps_params={'ensure_ascii': False})
 
 
@@ -133,7 +136,7 @@ def get_dataset_cols(request):
     except Exception as e:
         data['code'] = 500
         data['msg'] = str(e)
-        traceback.print_exc()
+        logger.exception(e)
     return JsonResponse(data, status=data['code'], json_dumps_params={'ensure_ascii': False})
 
 
@@ -152,9 +155,9 @@ def show_dataset_report(request):
         data["data"] = html_name
         data["code"] = 200
     except Exception as e:
-        traceback.print_exc()
         data['msg'] = str(e)
         data['code'] = 500
+        logger.exception(e)
     return JsonResponse(data, status=data['code'], safe=False)
 
 
@@ -177,7 +180,7 @@ def del_dataset(request):
             raise Exception("删除失败")
 
     except Exception as e:
-        traceback.print_exc()
+        logger.exception(e)
         data['msg'] = str(e)
         data['code'] = 500
     return JsonResponse(data, status=data['code'])
@@ -209,7 +212,7 @@ def generate_code(request):
             data['code'] = 200
         return JsonResponse(data, status=data['code'])
     except Exception as e:
-        traceback.print_exc()
+        logger.exception(e)
         return JsonResponse({'msg': str(e)})
 
 
@@ -238,7 +241,7 @@ def export_code(request):
         else:
             raise Exception('文件不存在')
     except Exception as e:
-        traceback.print_exc()
+        logger.exception(e)
         return HttpResponse(str(e))
 
 

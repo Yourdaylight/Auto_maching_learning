@@ -54,21 +54,6 @@ class SetModel():
         self.generate = ''
         self.clean_code = ''
 
-    def clean_data(self, df, cols, op, standard=''):
-        """
-           自动数据清洗
-           df:
-           cols:
-           op:数据清洗的操作
-           """
-        if op == 'fillna':
-            df.loc[:, cols].fillna()
-        elif op == 'dropna':
-            df.loc[:, cols].dropna()
-        else:
-            df.loc[:, cols].apply(op)
-        return df
-
     def joint_code(self, code_path, encoding='utf-8'):
         """拼接代码文件"""
         try:

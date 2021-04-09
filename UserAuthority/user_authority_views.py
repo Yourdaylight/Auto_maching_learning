@@ -1,11 +1,16 @@
-import json
-
+import os, sys, json
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 
 # Create your views here.
 from UserAuthority.user_authority_model import UserProcess, Regist, sendCode
+from utils.logutil import set_log
+from Auto_maching_learning.settings import LOG_DIR
+
+logger = set_log(os.path.join(LOG_DIR, sys.argv[0].split(".")[0]))
 UP = UserProcess()
+
+
 @require_http_methods(['POST'])
 def login(request):
     '''
@@ -19,7 +24,8 @@ def login(request):
         password = postBody.get("password")
         res = UP.login(username, password)
         return JsonResponse({"msg": res})
-    except:
+    except Exception as e:
+        logger.exception(e)
         return JsonResponse({'msg': res})
 
 
@@ -35,7 +41,8 @@ def check_exist(request):
         query_dict = postBody.get("query_dict")
         res = UP.check_exist(query_dict)
         return JsonResponse({"msg": res})
-    except:
+    except Exception as e:
+        logger.exception(e)
         return JsonResponse({'msg': res})
 
 
@@ -67,6 +74,7 @@ def regist(request):
         else:
             raise Exception("验证码错误，注册失败")
     except Exception as e:
+        logger.exception(e)
         data['code'] = 500
         data['msg'] = str(e)
     return JsonResponse(data, status=data['code'])

@@ -1,12 +1,12 @@
-import json
-import traceback
-
+import os, sys, json
 import pandas as pd
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-
+from Auto_maching_learning.settings import LOG_DIR
+from utils.logutil import set_log
 from .engine_model import DataCleaningEngine
 
+logger = set_log(os.path.join(LOG_DIR, sys.argv[0].split(".")[0]))
 clean_engine = DataCleaningEngine()
 
 
@@ -28,7 +28,7 @@ def check_clean_condition(request):
     except Exception as e:
         msg = str(e)
         code = 500
-        traceback.print_exc()
+        logger.exception(e)
 
     return JsonResponse({"code": code, "msg": msg, "data": data})
 
@@ -54,7 +54,7 @@ def save_clean_data(request):
     except Exception as e:
         msg = str(e)
         code = 500
-        traceback.print_exc()
+        logger.exception(e)
 
     return JsonResponse({"code": code, "msg": msg, "data": data})
 
@@ -81,7 +81,8 @@ def check_mining_condition(request):
         evaluate_methods = postBody.get("metrics")
     except Exception as e:
         msg = str(e)
-        coce = 500
+        code = 500
+        logger.exception(str(e))
 
     return JsonResponse({"code": code, "msg": msg, "data": data})
 
@@ -96,4 +97,5 @@ def run_mining_code(request):
         conditions = post_body.pop("conditions", {})
     except Exception as e:
         msg, code = str(e), 500
+        logger.exception(e)
     return JsonResponse({"code": code, "msg": msg, "data": data})
