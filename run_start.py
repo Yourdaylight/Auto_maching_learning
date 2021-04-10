@@ -3,7 +3,9 @@
 # @Author  :lzh
 # @File    : run_start.py
 # @Software: PyCharm
+# @description :前后端启动脚本
 import os
+import platform
 import threading
 
 
@@ -18,6 +20,8 @@ class myThread(threading.Thread):
 
 # 创建新线程
 start_backend = "python3 manage.py runserver"
+if platform.system().lower() == "linux":
+    start_backend = "python manage.py runserver"
 start_fronend = "cd ../AML_frontend/ && npm run dev"
 thread_backend = myThread(start_backend)
 thread_frontend = myThread(start_fronend)

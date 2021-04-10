@@ -19,7 +19,7 @@ def set_log(filename, log_level=logging.ERROR):
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     # 日志信息存进文件
-    log_file_handler = TimedRotatingFileHandler(filename=filename, when="S", interval=1, backupCount=7)
+    log_file_handler = TimedRotatingFileHandler(filename=filename, when="D", interval=1, backupCount=7)
     log_file_handler.suffix = "%Y-%m-%d.log"
     log_file_handler.extMatch = re.compile(r"^\d{4}-\d{2}-\d{2}.log$")
     log_file_handler.setFormatter(formatter)
@@ -36,5 +36,5 @@ def set_log(filename, log_level=logging.ERROR):
 
 
 if __name__ == '__main__':
-    logg = set_log("logg",logging.ERROR)
+    pass
 

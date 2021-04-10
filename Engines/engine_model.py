@@ -17,10 +17,10 @@ class DataCleaningEngine:
         :return: dataframe 清洗完成后的数据
         """
         try:
+
             dataset = self.db.find_dataset(user_name, dataset_name)
             df = pd.DataFrame(dataset) if dataset else {}
             if isinstance(df, pd.core.frame.DataFrame):
-                print("缺失值统计:", df.isnull().sum())
                 for condition in conditions:
                     # cols用于后续的表达式执行
                     try:

@@ -25,8 +25,7 @@ SECRET_KEY = 'yvolr8nvtga=6p!=0g+#8vbpq98xf-0do=cbt#crl$6b^)$qm4'
 DEBUG = True
 ALLOWED_HOSTS = []
 
-
-LOG_DIR = os.path.join(BASE_DIR, "logs") 
+LOG_DIR = os.path.join(BASE_DIR, "logs")
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
@@ -94,16 +93,14 @@ DATABASES = {
     }
 }
 import platform
+
 if platform.system().lower() == 'windows':
     DATABASES["default"]["PASSWORD"] = "123456"
-
-
 
 import mongoengine
 
 # 连接mongodb中数据库
 conn = mongoengine.connect("AML")
-print(conn)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

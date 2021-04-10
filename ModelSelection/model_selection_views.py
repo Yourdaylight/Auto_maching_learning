@@ -14,7 +14,7 @@ from utils.MODEL_DICT import CLEAN_DICT, MODEL_DICT, METRICS_DICT
 from utils.logutil import set_log
 from Auto_maching_learning.settings import LOG_DIR
 
-logger = set_log(os.path.join(LOG_DIR, sys.argv[0].split(".")[0]))
+logger = set_log(os.path.join(LOG_DIR, os.path.split(__file__)[1].split(".")[0]))
 # Create your views here.
 
 def get_datesets_list(request):

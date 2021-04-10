@@ -6,7 +6,8 @@ from Auto_maching_learning.settings import LOG_DIR
 from utils.logutil import set_log
 from .engine_model import DataCleaningEngine
 
-logger = set_log(os.path.join(LOG_DIR, sys.argv[0].split(".")[0]))
+logger = set_log(os.path.join(LOG_DIR, os.path.split(__file__)[1].split(".")[0]))
+
 clean_engine = DataCleaningEngine()
 
 

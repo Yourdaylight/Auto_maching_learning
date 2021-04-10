@@ -1,13 +1,15 @@
-import os, sys, json
+import json
+import os
+
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 
+from Auto_maching_learning.settings import LOG_DIR
 # Create your views here.
 from UserAuthority.user_authority_model import UserProcess, Regist, sendCode
 from utils.logutil import set_log
-from Auto_maching_learning.settings import LOG_DIR
 
-logger = set_log(os.path.join(LOG_DIR, sys.argv[0].split(".")[0]))
+logger = set_log(os.path.join(LOG_DIR, os.path.split(__file__)[1].split(".")[0]))
 UP = UserProcess()
 
 
