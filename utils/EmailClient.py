@@ -76,8 +76,10 @@ class EmailService():
         print(regist_info)
         if regist_info:
             send_time = regist_info.get('send_time')
+            # 验证码保留五分钟
             if time.time() - send_time > self.valid_time:
                 self.temp_collection.delete_one(query)
+
                 return False
             if text == str(regist_info.get("check_code")):
                 self.temp_collection.delete_one(query)

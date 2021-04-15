@@ -1,20 +1,20 @@
 import json
 import os
-import sys
-import traceback
 
 import pandas as pd
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 
+from Auto_maching_learning.settings import LOG_DIR
 from ModelSelection.dataset_process_model import DatasetProcess
 from ModelSelection.model_process_model import SetModel
 from utils.MODEL_DICT import CLEAN_DICT, MODEL_DICT, METRICS_DICT
 from utils.logutil import set_log
-from Auto_maching_learning.settings import LOG_DIR
 
 logger = set_log(os.path.join(LOG_DIR, os.path.split(__file__)[1].split(".")[0]))
+
+
 # Create your views here.
 
 def get_datesets_list(request):
@@ -258,13 +258,32 @@ def get_methods(request):
         "clean": CLEAN_DICT,
         "metrics": METRICS_DICT
     }
-    code_dict = types.get(request.GET.get("type"),{})
+    code_dict = types.get(request.GET.get("type"), {})
     for method, sub_method in code_dict.items():
         if isinstance(sub_method, dict):
             res[method] = list(sub_method.keys())
         else:
             res[method] = sub_method
     return JsonResponse({"data": res}, status=200)
+
+
+@require_http_methods(['POST'])
+def generate_clean_code(request):
+    data, code, msg = None, 200, None
+    try:
+        post_body = json.loads(request.body)
+        dataset_name = post_body.pop("dataset", "")
+        user_name = post_body.pop("user_name", "")
+        conditions = post_body.pop("conditions", {})
+        dp = DatasetProcess(username=user_name)
+        data = dp.generate_clean_code(user_name, dataset_name, conditions)
+        msg = "生成成功！"
+    except Exception as e:
+        msg = str(e)
+        code = 500
+        logger.exception(e)
+
+    return JsonResponse({"data": data, "msg": msg, "code": code})
 
 
 @require_http_methods(['POST'])

@@ -74,6 +74,7 @@ def regist(request):
             data['code'] = 200
             data['msg'] = '注册成功'
         else:
+            logger.error("注册表单:{};注册验证码:{}".format(infos, checkcode))
             raise Exception("验证码错误，注册失败")
     except Exception as e:
         logger.exception(e)

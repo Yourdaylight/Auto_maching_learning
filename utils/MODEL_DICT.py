@@ -55,9 +55,9 @@ CLEAN_DICT = {
     "重复项删除": "df[cols] = df[cols].dropna()",
     "排序": "df.sort_values(by=cols, inplace= True)",
     "筛选": {
-        "大于": "df[cols]",
-        "等于": "df[cols]",
-        "小于": "df[cols]",
+        "大于": "df[df[cols]>",
+        "等于": "df[df[cols]=",
+        "小于": "df[df[cols]<",
         "包含": "df[cols].str().contains()"
     },
     "标准化": {

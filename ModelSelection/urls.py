@@ -14,7 +14,8 @@ urlpatterns = [
     path('generate_code', generate_code),  # 生成代码
     path('export_code', export_code),  # 导出代码文件
     path('del_dataset', del_dataset),  # 删除数据集
-    path('plot_graph', plot_graph)  # 绘制图形
+    path('plot_graph', plot_graph),  # 绘制图形
+    path('generate_clean_code', generate_clean_code) # 生成数据清洗代码
 
 ]
 

@@ -16,9 +16,10 @@ import os
 - 主函数预先定义一个代码文件，相关参数通过占位符填充，填充的参数来源于前段输入，包括：主要包括特征列、目标列，文件名
 """
 from utils.MODEL_DICT import MODEL_DICT
+from ModelSelection.dataset_process_model import joint_code
 
 
-class SetModel():
+class SetModel:
     """
 
     用于与前端界面交互，获取特征列，以及数据处理步骤。
@@ -42,7 +43,6 @@ class SetModel():
         :param model_name(str of list):模型
         :param evaluate_methods(str of list,非必填):模型评估方法
         """
-        self.code_files = os.path.join(os.path.abspath(''), 'code_templates')
         self.name = name
         self.dataset_name = dataset_name
         self.target = target
@@ -54,22 +54,10 @@ class SetModel():
         self.generate = ''
         self.clean_code = ''
 
-    def joint_code(self, code_path, encoding='utf-8'):
-        """拼接代码文件"""
-        try:
-            f = open(os.path.join(self.code_files, code_path), 'r', encoding=encoding)
-            self.generate += f.read()
-        except Exception as e:
-            f = open(os.path.join(self.code_files, code_path), 'r', encoding='gbk')
-            self.generate += f.read()
-
-    def get_clean_code(self):
-        pass
-
     def get_code(self):
         """ 生成代码"""
         # 拼接导入的库
-        self.joint_code('ImportPackages.py')
+        self.generate += joint_code('ImportPackages.py')
         # 拼接模型需要的库
         for model in self.model_name:
             self.generate += MODEL_DICT[self.model_type][model] + "\n"
@@ -88,21 +76,21 @@ MODEL = [{}]
 
         # 拼接分类/回归/聚类的主函数与必要评估方法
         if self.model_type == "分类":
-            self.joint_code('main_supervisied.py')
-            self.joint_code("evaluation_classifier.py")
+            self.generate += joint_code('main_supervisied.py')
+            self.generate += joint_code("evaluation_classifier.py")
         elif self.model_type == "回归":
-            self.joint_code('main_supervisied.py')
-            self.joint_code("evaluation_regressor.py")
+            self.generate += joint_code('main_supervisied.py')
+            self.generate += joint_code("evaluation_regressor.py")
         elif self.model_type == "聚类":
-            self.joint_code("main_unsupervised.py")
-            self.joint_code("evaluation_cluster.py")
+            self.generate += joint_code("main_unsupervised.py")
+            self.generate += joint_code("evaluation_cluster.py")
 
         # 拼接用户自选的可视化的评估方法
         if len(self.evaluate_methods) != 0:
             for method in self.evaluate_methods:
                 location = MODEL_DICT.get(method)
                 if location:
-                    self.joint_code(location)
+                    self.generate += joint_code(location)
 
         # 生成代码文件
         filename = "generate_{}_{}.py".format(self.username, self.name)

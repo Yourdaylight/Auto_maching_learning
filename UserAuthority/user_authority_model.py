@@ -37,7 +37,7 @@ class UserProcess():
 def Regist(infos, **params):
     '''
     注册信息
-    :param infos:dict
+    :param infos:dict 注册表单信息
     :return:
     '''
     try:

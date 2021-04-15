@@ -13,13 +13,30 @@ import pandas as pd
 import pandas_profiling
 import pymongo
 
+from Auto_maching_learning.settings import LOG_DIR
 from ModelSelection.models import DatasetModel
+from utils.MODEL_DICT import CLEAN_DICT
+from utils.logutil import set_log
+logger = set_log(os.path.join(LOG_DIR, os.path.split(__file__)[1].split(".")[0]))
+
+template_path = os.path.join(os.path.abspath(''), 'code_templates')
 
 
-# username='root'
-# password='lzh.mongo.admin'
-# url='47.97.197.244'
-# port=27017
+def joint_code(code_path, encoding='utf-8'):
+    """拼接代码文件"""
+    text = ""
+    try:
+        try:
+            f = open(os.path.join(template_path, code_path), 'r', encoding=encoding)
+            text = f.read()
+        except Exception as e:
+            f = open(os.path.join(template_path, code_path), 'r', encoding='gbk')
+            text = f.read()
+    except Exception as e:
+        logger.exception(e)
+    return text
+
+
 class DatasetProcess:
     def __init__(self, database="AML", collection="user_model", username="admin"):
         self.client = pymongo.MongoClient(host="localhost", port=27017)
@@ -46,7 +63,7 @@ class DatasetProcess:
         postfix = os.path.split(file_path)[-1].split(".")
         filename = postfix[0] + "_" + postfix[1]
         if not self.isVip:
-            if (len(self.datasets) > 5):
+            if len(self.datasets) > 5:
                 return False, "非会员最多存储五份数据集"
         if filename in self.datasets:
             return False, "该数据集已存在"
@@ -119,7 +136,6 @@ class DatasetProcess:
         except Exception as e:
             raise e
 
-    # todo 后续确保filename为相对路径
     def generate_report(self, dataset_name):
         try:
             current_path = os.getcwd()
@@ -134,6 +150,38 @@ class DatasetProcess:
                 report = pandas_profiling.ProfileReport(df)
                 report.to_file(filename)
             return os.path.split(filename)[-1]
+        except Exception as e:
+            raise e
+
+
+    def generate_clean_code(self, user_name, dataset_name, conditions):
+        """
+        传入数据集，清洗条件
+        :param user_name:
+        :param dataset_name:
+        :param conditions:
+        :return: str : 数据清洗代码
+        """
+        generate_code = joint_code("main_clean.py") % dataset_name
+        try:
+            for condition in conditions:
+                try:
+                    cols = condition.get("columns", [])
+                    clean_method = condition.get("clean_method", "")
+                    clean_expression = CLEAN_DICT.get(clean_method, "")
+
+                    # 清洗方法为字典，说明含有子方法，从映射表中取出对应表达式后执行语句
+                    if clean_expression and isinstance(clean_expression, dict):
+                        sub_method = condition.get("sub_method", "")
+                        clean_expression = CLEAN_DICT.get(clean_method, {}).get(sub_method)
+
+                    generate_code += """\ncols = {}\n{}
+                                        """.format(cols, clean_expression)
+                except Exception as e:
+                    raise Exception(e)
+            generate_code += "\ndf.to_csv('clean_'+FILE_PATH+'.csv')"
+            timestamp = time.time()
+            return generate_code
         except Exception as e:
             raise e
 
