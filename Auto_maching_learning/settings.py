@@ -81,25 +81,25 @@ WSGI_APPLICATION = 'Auto_maching_learning.wsgi.application'
 
 DATABASES = {
     'default': {
-        "ENGINE": "django.db.backends.sqlite3",
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
+        "ENGINE": None,
+
     },
     # 'mysql': {
     #     'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
     #     'NAME': 'AML',  # 你要存储数据的库名，事先要创建之
-    #     'USER': 'root',  # 数据库用户名
+    #     'USER': '',  # 数据库用户名
     #     'PASSWORD': '',  # 密码
     #     'HOST': 'localhost',  # 主机
-    #     'PORT': '3306',  # 数据库使用的端口
+    #     'PORT': '',  # 数据库使用的端口
     # },
     'mongotest': {
         'ENGINE': None,
     }
 }
-import platform
-
-if platform.system().lower() == 'windows':
-    DATABASES["default"]["PASSWORD"] = "123456"
+# import platform
+#
+# if platform.system().lower() == 'windows':
+#     DATABASES["default"]["PASSWORD"] = "123456"
 
 import mongoengine
 

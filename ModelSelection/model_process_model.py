@@ -55,24 +55,20 @@ class SetModel:
         self.clean_code = ''
 
     def get_code(self):
-        """ 生成代码"""
-        # 拼接导入的库
-        self.generate += joint_code('ImportPackages.py')
+        """
+        根据模板，生成代码
+        :return:
+        """
         # 拼接模型需要的库
         for model in self.model_name:
             self.generate += MODEL_DICT[self.model_type][model] + "\n"
-
+        # 拼接导入的库,并填充读取的文件名
+        self.generate += joint_code('ImportPackages.py') % self.dataset_name.replace('_', '.')
         # 拼接变量
-        self.generate += """
-FILE_PATH='./{}'
-FEATURES={}
-TARGET='{}'
-        """.format(self.dataset_name.replace('_', '.'), self.features, self.target)
+        self.generate += "\nFEATURES={}\nTARGET='{}'".format(self.features, self.target)
         # 拼接调用的模型
         sklearn_models = [MODEL_DICT[self.model_type].get(model, " ").split(' ')[-1] + '()' for model in self.model_name]
-        self.generate += """
-MODEL = [{}]
-        """.format(", ".join(sklearn_models))
+        self.generate += "\nMODEL = [{}]".format(", ".join(sklearn_models))
 
         # 拼接分类/回归/聚类的主函数与必要评估方法
         if self.model_type == "分类":
