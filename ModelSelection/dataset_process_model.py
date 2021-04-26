@@ -140,7 +140,7 @@ class DatasetProcess:
         try:
             current_path = os.getcwd()
             parent_path, current_file_name = os.path.split(current_path)
-            filename = os.path.join(parent_path, "AML_frontend/static/%s_%s.html" % (self.username, dataset_name))
+            filename = os.path.join(parent_path, "AML-frontend-master/static/%s_%s.html" % (self.username, dataset_name))
 
             if not os.path.exists(filename):
                 model = self.mydb['dataset_model']

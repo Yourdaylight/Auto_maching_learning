@@ -37,10 +37,10 @@ class MongoUtil:
 
 
 if __name__ == '__main__':
-    import pandas as pd
-
-    a = MongoUtil()
-    data = a.find_dataset("lzh3", "day_csv")
-    df = pd.DataFrame(data)
-    df.to_csv("../temp/clean.day.csv", index=None)
+    # import pandas as pd
+    #
+    # a = MongoUtil()
+    # data = a.find_dataset("lzh3", "day_csv")
+    # df = pd.DataFrame(data)
+    # df.to_csv("../temp/clean.day.csv", index=None)
     pass

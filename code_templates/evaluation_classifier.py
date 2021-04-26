@@ -5,8 +5,12 @@ def model_performance_evaluation(model_name, test, pred, spend_time):
     acc = accuracy_score(test, pred)
     print(model_name, '| 准确率: %.4f' % acc)
     pred = pred.astype('float64')
-    false_positive_rate, true_positive_rate, thresholds = roc_curve(test, pred)
-    roc_auc = auc(false_positive_rate, true_positive_rate)
+    # auc曲线使用于二分类问题
+    roc_auc = "auc曲线适用于二分类问题"
+    if len(set(pred))==2 and len(set(test))==2:
+        false_positive_rate, true_positive_rate, thresholds = roc_curve(test, pred)
+        roc_auc = auc(false_positive_rate, true_positive_rate)
+        print(model_name, '| AUC: %.4f' % roc_auc)
     print(model_name, '| AUC: %.4f' % roc_auc)
     cm = confusion_matrix(test, pred)
     miss_report = cm[0][1] / (1.0 * cm[0][1] + cm[1][1])
@@ -24,7 +28,7 @@ for spend_time, fit_model in fit_models.items():
     y_pred = fit_model.predict(X_test)
     print("====================")
     model_name = str(fit_model).split("(")[0]
-    acc, roc_auc, miss_report, false_report = model_performance_evaluation(model_name, y_test, y_pred)
+    acc, roc_auc, miss_report, false_report = model_performance_evaluation(model_name, y_test, y_pred, spend_time)
     compare_result["模型名称"].append(model_name)
     compare_result["准确率"].append(acc)
     compare_result["AUC"].append(roc_auc)

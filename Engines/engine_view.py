@@ -1,14 +1,18 @@
-import os, sys, json
+import json
+import os
+
 import pandas as pd
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+
 from Auto_maching_learning.settings import LOG_DIR
 from utils.logutil import set_log
-from .engine_model import DataCleaningEngine
+from .engine_model import DataCleaningEngine, DataMiningEngine
 
 logger = set_log(os.path.join(LOG_DIR, os.path.split(__file__)[1].split(".")[0]))
 
 clean_engine = DataCleaningEngine()
+mining_engine = DataMiningEngine()
 
 
 @require_http_methods(['POST'])
@@ -27,10 +31,8 @@ def check_clean_condition(request):
         clean_engine.check_clean_condition(user_name, dataset_name, conditions)
         msg = "校验通过！"
     except Exception as e:
-        msg = str(e)
-        code = 500
+        msg, code = str(e), 500
         logger.exception(e)
-
     return JsonResponse({"code": code, "msg": msg, "data": data})
 
 
@@ -53,10 +55,8 @@ def save_clean_data(request):
             if res:
                 msg = "保存成功"
     except Exception as e:
-        msg = str(e)
-        code = 500
+        msg, code = str(e), 500
         logger.exception(e)
-
     return JsonResponse({"code": code, "msg": msg, "data": data})
 
 
@@ -81,10 +81,8 @@ def check_mining_condition(request):
         model_name = postBody.get('models')
         evaluate_methods = postBody.get("metrics")
     except Exception as e:
-        msg = str(e)
-        code = 500
-        logger.exception(str(e))
-
+        msg, code = str(e), 500
+        logger.exception(e)
     return JsonResponse({"code": code, "msg": msg, "data": data})
 
 
@@ -93,9 +91,9 @@ def run_mining_code(request):
     data, code, msg = None, 200, None
     try:
         post_body = json.loads(request.body)
-        dataset_name = post_body.pop("dataset", "")
-        user_name = post_body.pop("user_name", "")
-        conditions = post_body.pop("conditions", {})
+        user_name = post_body.pop("username", "")
+        conditions = post_body.pop("data", {})
+        data = mining_engine.run_code(user_name, conditions)
     except Exception as e:
         msg, code = str(e), 500
         logger.exception(e)
