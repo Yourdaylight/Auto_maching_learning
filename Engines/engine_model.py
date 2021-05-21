@@ -155,9 +155,13 @@ class DataMiningEngine:
             html_template = html_template % df_html
             os.remove(temp_filename)
 
-            with open("result.html", "w", encoding="utf-8") as f:
+            # 生成html文件到前端static下
+            current_path = os.getcwd()
+            parent_path, current_file_name = os.path.split(current_path)
+            filename = os.path.join(parent_path, "AML-frontend-master/static/%s_%s_model_result.html" % (username, conditions.get("name")))
+            with open(filename, "w", encoding="utf-8") as f:
                 f.write(html_template)
-            return html_template
+            return os.path.split(filename)[-1]
         except Exception as e:
             logger.exception(e)
             raise e
