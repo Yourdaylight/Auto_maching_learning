@@ -194,17 +194,12 @@ def generate_code(request):
     }
     try:
         postBody = json.loads(request.body)
-        username = postBody.pop('username')
-        postBody = postBody.get('data')
-        name = postBody.get('name')
-        dataset_name = postBody.get('dataset_name')
-        features = postBody.get('features')
-        target = postBody.get('target')
-        model_type = postBody.get('model_type')
-        model_name = postBody.get('models')
-        evaluate_methods = postBody.get("metrics")
-        myModel = SetModel(name, dataset_name, features, target, model_type, model_name, username, evaluate_methods, )
-
+        username = postBody.pop('username', '')
+        if not username:
+            raise Exception("请先登录")
+        params = postBody.get('data')
+        params["username"] = username
+        myModel = SetModel(**params)
         codes = myModel.get_code()
         if codes:
             data['data'] = codes
@@ -213,13 +208,92 @@ def generate_code(request):
         return JsonResponse(data, status=data['code'])
     except Exception as e:
         logger.exception(e)
-        return JsonResponse({'msg': str(e)})
+        return JsonResponse({'data': str(e), 'msg': str(e)}, status=200)
+
+
+@require_http_methods(['POST'])
+def save_params(request):
+    """
+    保存本次构建的代码
+    :param request:
+    :return:
+    """
+    data = {
+        "msg": None,
+        "code": 200
+    }
+    try:
+        postBody = json.loads(request.body)
+        username = postBody.pop('username', '')
+        if not username:
+            raise Exception("请先登录")
+        params = postBody.get('data')
+        params["username"] = username
+        myModel = SetModel(**params)
+        save_success = myModel.save_params(hide_history=False)
+        data['msg'], data["code"] = ("保存成功", 200) if save_success else ("该配置已存在", 500)
+        return JsonResponse(data, status=200)
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse({'data': str(e), 'msg': str(e)}, status=200)
+
+
+@require_http_methods(['GET'])
+def get_history_list(request):
+    """
+    获取所有历史构建记录
+    :param request:
+    :return:
+    """
+    data = {
+        "msg": None,
+        "code": None,
+        "data": None
+    }
+    try:
+        username = request.GET['username']
+        if not username:
+            raise Exception("请先登录")
+
+        myModel = SetModel(username=username)
+        history_list = myModel.get_history()
+        if history_list:
+            data['msg'] = "查询成功"
+            data['code'] = 200
+            data["data"] = history_list
+        else:
+            data["msg"], data['code'] = "获取历史记录失败", 500
+        return JsonResponse(data, status=200)
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse({'data': str(e), 'msg': str(e)}, status=200)
+
+
+@require_http_methods(['POST'])
+def delete_history(request):
+    """
+    获取所有历史构建记录
+    :param request:
+    :return:
+    """
+    try:
+        postBody = json.loads(request.body)
+        username = postBody.get("username")
+        if not username:
+            raise Exception("请先登录")
+        myModel = SetModel(**postBody)
+        delete_result = myModel.delte_history()
+        msg, code = ("删除成功", 200) if delete_result else ("删除失败", 500)
+        return JsonResponse({"msg": msg, "code": code}, status=200)
+    except Exception as e:
+        logger.exception(e)
+        return JsonResponse({'data': str(e), 'msg': str(e)}, status=200)
 
 
 @require_http_methods(['GET'])
 def export_code(request):
     '''
-    根据用户选择的数据集，展示所有数据
+    导出生成的代码。当导出成功时，保存当前配置参数到数据库
     '''
     data = {
         "msg": None,

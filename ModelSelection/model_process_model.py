@@ -1,4 +1,7 @@
+import json
 import os
+
+from bson import json_util
 
 """
 流程：   
@@ -17,6 +20,7 @@ import os
 """
 from utils.MODEL_DICT import MODEL_DICT
 from ModelSelection.dataset_process_model import joint_code
+from utils.mongodb_util import MongoUtil
 
 
 class SetModel:
@@ -32,7 +36,7 @@ class SetModel:
     }
     """
 
-    def __init__(self, name, dataset_name, features, target, model_type, model_name, username='', evaluate_methods=[]):
+    def __init__(self, **params):
         """
 
         :param name(str,):任务名称
@@ -43,14 +47,15 @@ class SetModel:
         :param model_name(str of list):模型
         :param evaluate_methods(str of list,非必填):模型评估方法
         """
-        self.name = name
-        self.dataset_name = dataset_name
-        self.target = target
-        self.features = features
-        self.model_type = model_type
-        self.model_name = model_name
-        self.evaluate_methods = evaluate_methods
-        self.username = username
+        self.name = params.get("name", "")
+        self.dataset_name = params.get("dataset_name", "")
+        self.target = params.get("target", "")
+        self.features = params.get("features", [])
+        self.model_type = params.get("model_type", "")
+        self.model_name = params.get("model_name", [])
+        self.evaluate_methods = params.get("evaluate_methods", [])
+        self.username = params.get("username", "")
+        self.model_scene = params.get("model_scene", "")
         self.generate = ''
         self.clean_code = ''
 
@@ -100,17 +105,77 @@ class SetModel:
         # 返回生成代码的文本
         return self.generate
 
-    def save_params(self):
+    def save_params(self, hide_history=True):
         """
-        保存当前参数到数据库
+        保存当前参数(如果不重复的话)到数据库。
+        hide_history:bool:是否向用户展示该条历史记录，
+                            hide_history默认为True，当用户运行成功当前代码时自动保存，
+                            该条历史记录保存在admin用户中，该记录用于后续推荐。
+                            当用户在界面上选择保存当前参数时，hide_history为False，正常保存
         :return:
         """
-        pass
+        try:
+            params = self.__dict__
+            db_util = MongoUtil()
+            del params["generate"], params["clean_code"]
+            check_duplicate_query = {
+                "username": self.username if not hide_history else "admin",
+                "name": self.name
+            }
+            exists = db_util.find_object("history_model", check_duplicate_query)
+            # 不存在这条记录且正常登陆，将这条记录加入历史记录集合
+            if not exists and self.username:
+                db_util.insert_object("history_model", params)
+            # 存在则更新记录
+            elif exists and self.username:
+                db_util.update_object("history_model", check_duplicate_query, params)
+            return True
+        except Exception as e:
+            raise e
 
-    def run_code(self):
-        pass
+    def get_history(self):
+        """
+        获取用户的所有历史记录,将所有列表项转换成,分割
+        :return:
+        """
+        try:
+            db_util = MongoUtil()
+            search_query = {
+                "username": self.username,
+            }
+            history_list = db_util.find_object("history_model", search_query)
+            history_list = json.loads(json_util.dumps(history_list))
+            for index, history in enumerate(history_list):
+                for k, v in history.items():
+                    if v is None:
+                        history_list[index][k] = ""
+                    if isinstance(v, list):
+                        history_list[index][k] = ",".join(v)
+            return history_list
+        except Exception as e:
+            raise e
+
+    def delte_history(self):
+        """
+        删除历史记录
+        :param object:dict 删除对象的查询条件
+        :return:
+        """
+        try:
+            db_util = MongoUtil()
+            db_util.delete_object("history_model", {
+                "username": self.username,
+                "name": self.name
+            })
+            return True
+        except Exception as e:
+            raise e
 
 
 if __name__ == '__main__':
-    myModel = SetModel('day', ['cnt', 'yr', 'weekday'], 'season', '分类', ['决策树'], ['混淆矩阵', 'ROC曲线'])
-    myModel.get_code()
+    myModel = SetModel(username="lzh3")
+    ll = myModel.get_history()
+    print(ll)
+    print("======================")
+    for i in ll:
+        print(i)

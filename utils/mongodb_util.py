@@ -9,9 +9,66 @@ class MongoUtil:
         self.mydb = self.client[database]
 
     def find_dataset(self, user_name, dataset_name):
-        collection = self.mydb["dataset_model"]
-        dataset = collection.find_one({"username": user_name, "dataset_name": dataset_name})
-        return dataset.get("data", {})
+        try:
+            collection = self.mydb["dataset_model"]
+            dataset = collection.find_one({"username": user_name, "dataset_name": dataset_name})
+            return dataset.get("data", {})
+        except Exception as e:
+            raise e
+
+    def insert_object(self, database_name, object):
+        """
+        插入新的对象到数据库
+        :param user_name:
+        :param database_name:
+        :param object:dict:
+        :return:
+        """
+        try:
+            self.mydb[database_name].insert_one(object)
+        except Exception as e:
+            raise e
+
+    def update_object(self, database_name, filter_object, update_object):
+        """
+
+        :param database_name:
+        :param filter_object: 过滤条件
+        :param update_object: 更新内容
+        :return:
+        """
+        try:
+            return self.mydb[database_name].update_one(
+                filter_object, {"$set": update_object}
+            )
+        except Exception as e:
+            raise e
+
+    def find_object(self, database_name, object):
+        """
+        自定义查询
+        :param database_name:
+        :param object: dict:查询条件
+        :return:
+        """
+        try:
+            return list(self.mydb[database_name].find(object))
+        except Exception as e:
+            raise e
+
+    def delete_object(self, database_name, object):
+        """
+        删除
+        :param database_name:
+        :param object:
+        :return:
+        """
+        try:
+            res = self.mydb[database_name].delete_one(object)
+            print (res)
+            return res
+        except Exception as e:
+            raise e
 
     def upload_dataset(self, user_name, dataset_name, new_data):
         """

@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 
 from Auto_maching_learning.settings import LOG_DIR
+from ModelSelection.model_process_model import SetModel
 from utils.logutil import set_log
 from .engine_model import DataCleaningEngine, DataMiningEngine
 
@@ -94,6 +95,8 @@ def run_mining_code(request):
         user_name = post_body.pop("username", "")
         conditions = post_body.pop("data", {})
         data = mining_engine.run_code(user_name, conditions)
+        # 引擎运行代码成功，保存运行成功的该条记录到admin账户
+        SetModel(name=conditions.get("name"), username="admin").save_params()
     except Exception as e:
         msg, code = str(e), 500
         logger.exception(e)
