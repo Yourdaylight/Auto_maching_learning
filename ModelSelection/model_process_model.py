@@ -46,6 +46,8 @@ class SetModel:
         :param model_type(str):分类/回归/聚类
         :param model_name(str of list):模型
         :param evaluate_methods(str of list,非必填):模型评估方法
+        :param username(str)
+        :param model_scene(str):模型使用场景
         """
         self.name = params.get("name", "")
         self.dataset_name = params.get("dataset_name", "")

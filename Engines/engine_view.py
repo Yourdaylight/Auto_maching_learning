@@ -96,7 +96,9 @@ def run_mining_code(request):
         conditions = post_body.pop("data", {})
         data = mining_engine.run_code(user_name, conditions)
         # 引擎运行代码成功，保存运行成功的该条记录到admin账户
-        SetModel(name=conditions.get("name"), username="admin").save_params()
+        conditions['username'] = 'admin'
+        if not SetModel(**conditions).save_params():
+            logger.error("保存至admin账户失败")
     except Exception as e:
         msg, code = str(e), 500
         logger.exception(e)
