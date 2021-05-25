@@ -11,9 +11,8 @@ for model in MODEL:
     start_time = time.time()
     fit_model = model.fit(X_train, y_train)
     end_time = time.time()
-    spend_time = start_time - end_time
+    spend_time = end_time - start_time
     fit_models[spend_time] = fit_model
-# 模型评估
 
 
 
