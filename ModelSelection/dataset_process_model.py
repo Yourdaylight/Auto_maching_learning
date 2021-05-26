@@ -172,8 +172,14 @@ class DatasetProcess:
 
                     # 清洗方法为字典，说明含有子方法，从映射表中取出对应表达式后执行语句
                     if clean_expression and isinstance(clean_expression, dict):
+
                         sub_method = condition.get("sub_method", "")
                         clean_expression = CLEAN_DICT.get(clean_method, {}).get(sub_method)
+                        # 如果是筛选，需单独处理
+                        if clean_method == "筛选":
+                            sub_condition = condition.get("sub_condition","")
+                            filter_param = "'%s'"%sub_condition if not sub_condition.isdigit() else sub_condition
+                            clean_expression = clean_expression % filter_param
 
                     generate_code += """\ncols = {}\n{}
                                         """.format(cols, clean_expression)
