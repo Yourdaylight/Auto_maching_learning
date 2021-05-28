@@ -55,7 +55,7 @@ class SetModel:
         self.features = params.get("features", [])
         self.model_type = params.get("model_type", "")
         self.model_name = params.get("model_name", [])
-        self.evaluate_methods = params.get("evaluate_methods", [])
+        self.evaluate_methods = params.get("metrics", [])
         self.username = params.get("username", "")
         self.model_scene = params.get("model_scene", "")
         self.generate = ''

@@ -113,25 +113,34 @@ class DataMiningEngine:
             # 替换数据源，读取待运行的代码，将pandas读取部分修改为数据库获取
             with open(code_path, "r", encoding="utf-8") as f:
                 code = f.read()
+                output_html = "{}{}{}".format(uuid.uuid4(), username, ".html")
                 database_source_code = """
-                \nfrom utils.mongodb_util import MongoUtil
-                \nDF = pd.DataFrame(MongoUtil().find_dataset("{}","{}"))
-                """.format(username, conditions.get("dataset_name"))
+from utils.mongodb_util import MongoUtil
+DF = pd.DataFrame(MongoUtil().find_dataset("%s","%s"))
+OUTPUT_HTML = "%s"
+# 将可视化的图片直接插入到结果html中
+def insert_png2html(_plt,OUTPUT_HTML=OUTPUT_HTML):
+    figfile = BytesIO()
+    _plt.savefig(figfile, format='png')
+    figfile.seek(0)
+    figdata_png = base64.b64encode(figfile.getvalue())  # 将图片转为base64
+    figdata_str = str(figdata_png, "utf-8")  # 提取base64的字符串，不然是b'xxx'
+    # 保存为.html
+    html = '<img src=\"data:image/png;base64,{}\"/>'.format(figdata_str)
+    with open(OUTPUT_HTML, 'a+') as f:
+        f.write(html)
+                """%(username, conditions.get("dataset_name"),output_html)
 
                 code = re.sub(re.compile("# 读取数据(.*?)read_csv\(FILE_PATH\)", re.DOTALL), database_source_code, code)
-                temp_filename = "{}{}{}".format(uuid.uuid4(), username, ".html")
-                output_result_code = """
-                \nres_df.plot()
-                \nbuffer = BytesIO()
-                \nplt.savefig(buffer)
-                \nplot_data = buffer.getvalue()
-                \nimb = base64.b64encode(plot_data)
-                \nres_df.to_html('%s')
-                
-                """ % temp_filename
-
+                output_result_code = """\nres_df.to_html(OUTPUT_HTML) """
                 code += output_result_code
-
+                # 删除所有的plt.show()
+                code = re.sub("plt.show\(\)","",code)
+                # 找到使用matplotlib绘图的结果变量名,批量插入到html
+                find_plots = re.findall("plt_(.*) =", code)
+                for result_plot in find_plots:
+                    plot_name = "plt_{}".format(result_plot)
+                    code += "\ninsert_png2html({})".format(plot_name)
                 with open("new_code.py", "w") as c:
                     c.write(code)
             exec(code)
@@ -150,10 +159,10 @@ class DataMiningEngine:
                 </html>
             """
             # 读取执行上述代码生成的DataFrame表格html文件(dataframe)
-            with open(temp_filename, "r", encoding="utf-8") as f:
+            with open(output_html, "r", encoding="utf-8") as f:
                 df_html = f.read()
             html_template = html_template % df_html
-            os.remove(temp_filename)
+            os.remove(output_html)
 
             # 生成html文件到前端static下
             current_path = os.getcwd()

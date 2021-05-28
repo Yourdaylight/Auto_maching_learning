@@ -1,3 +1,4 @@
+# =============混淆矩阵绘制=============
 def plot_confusion_matrix(cm, classes, normalize=False,title='Confusion matrix', cmap=plt.cm.Blues):
     import itertools
     plt.figure()
@@ -19,6 +20,7 @@ def plot_confusion_matrix(cm, classes, normalize=False,title='Confusion matrix',
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     plt.show()
+    return plt
 
 #分类评估报告
 test_report = classification_report(y_test, y_pred)
@@ -27,4 +29,5 @@ print(test_report)
 cnf_matrix = confusion_matrix(y_test, y_pred)
 np.set_printoptions(precision=len(y.unique()))  # 设置打印数量的阈值
 class_names = y.unique()
-plot_confusion_matrix(cnf_matrix, classes=class_names, title='Confusion matrix')
+plt_cm = plot_confusion_matrix(cnf_matrix, classes=class_names, title='Confusion matrix')
+

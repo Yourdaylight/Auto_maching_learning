@@ -1,4 +1,5 @@
-def plot_ROC_curve(y_test, y_predict):
+# ==============roc曲线绘制================
+def plot_ROC_curve(y_test, y_predict, save_name="roc"):
     false_positive_rate, true_positive_rate, thresholds = roc_curve(y_test, y_predict)
     roc_auc = auc(false_positive_rate, true_positive_rate)
     plt.title('ROC')
@@ -7,5 +8,8 @@ def plot_ROC_curve(y_test, y_predict):
     plt.plot([0, 1], [0, 1], 'r--')
     plt.ylabel('TPR')
     plt.xlabel('FPR')
+    plt.savefig(save_name+".jpg")
     plt.show()
-plot_ROC_curve(y_test, y_pred)
+    return plt
+
+plt_roc = plot_ROC_curve(y_test, y_pred)

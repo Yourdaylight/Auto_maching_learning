@@ -11,7 +11,6 @@ def model_performance_evaluation(model_name, test, pred, spend_time):
         false_positive_rate, true_positive_rate, thresholds = roc_curve(test, pred)
         roc_auc = auc(false_positive_rate, true_positive_rate)
         print(model_name, '| AUC: %.4f' % roc_auc)
-    print(model_name, '| AUC: %.4f' % roc_auc)
     cm = confusion_matrix(test, pred)
     miss_report = cm[0][1] / (1.0 * cm[0][1] + cm[1][1])
     false_report = cm[1][0] / (1.0 * cm[0][0] + cm[1][0])

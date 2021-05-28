@@ -38,7 +38,7 @@ METRICS_DICT = {
     },
     "回归": {
         "误差平方和": "",
-        "决定系数(R²)": ""
+        "决定系数(R²)": "",
     },
     "聚类": {}
 }
@@ -55,10 +55,10 @@ CLEAN_DICT = {
     "重复项删除": "df[cols] = df[cols].dropna()",
     "排序": "df.sort_values(by=cols, inplace= True)",
     "筛选": {
-        "大于": "df[df[cols]>%s]",
-        "等于": "df[df[cols]>%s]",
-        "小于": "df[df[cols]<%s]",
-        "包含": "df[cols].str().contains(%s)"
+        "大于": "df[df[cols[0]]>%s]",
+        "等于": "df[df[cols[0]]==%s]",
+        "小于": "df[df[cols[0]]<%s]",
+        "包含": "df[df[cols[0]].str.contains('%s')]"
     },
     "标准化": {
         "最大最小规范化": "from sklearn.preprocessing import MinMaxScaler;df[cols]=MinMaxScaler().fit_transform(df[cols])",
