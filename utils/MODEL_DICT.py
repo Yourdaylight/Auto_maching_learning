@@ -65,7 +65,7 @@ CLEAN_DICT = {
         "均值规范化": "from sklearn.preprocessing import StandardScaler;df[cols]=StandardScaler().fit_transform(df[cols])"
     },
     "独热编码": "one_hot=pd.get_dummies(df[cols]);df[one_hot.columns] = one_hot",
-    "标签编码": "from sklearn.preprocessing import LabelEncoder;df['label_'+col for col in cols]=LabelEncoder().fit_transform(df[cols])"
+    "标签编码": "from sklearn.preprocessing import LabelEncoder;df['label_'+cols]=LabelEncoder().fit_transform(df[cols])"
 }
 if __name__ == '__main__':
     print(MODEL_DICT['分类']['KNN'])
