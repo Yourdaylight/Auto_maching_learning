@@ -25,7 +25,7 @@ class EmailService():
         self.temp_collection = self.mydb["temp"]
         self.valid_time = 60 * 5
 
-    def send_email(self, to_addr, password='htvviggqfrwobbfc'):
+    def send_email(self, to_addr, password=''):
         '''
         :param password: Email authorization code
         :param to_addr: recevier email address

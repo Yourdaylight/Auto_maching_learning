@@ -88,7 +88,11 @@ def send_code(request):
     '''
     注册发送验证码
     '''
-    postBody = json.loads(request.body)
-    email = postBody.get("email")
-    flag = sendCode(email)
+    msg = ""
+    try:
+        postBody = json.loads(request.body)
+        email = postBody.get("email")
+        flag = sendCode(email)
+    except Exception as e:
+        msg = "请先在服务器配置smtp"
     return JsonResponse({"msg": flag}, status=200)

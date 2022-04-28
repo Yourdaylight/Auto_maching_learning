@@ -23,7 +23,7 @@ SECRET_KEY = 'yvolr8nvtga=6p!=0g+#8vbpq98xf-0do=cbt#crl$6b^)$qm4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost","127.0.0.1"]
 
 LOG_DIR = os.path.join(BASE_DIR, "logs")
 if not os.path.exists(LOG_DIR):
